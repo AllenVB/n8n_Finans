@@ -2,6 +2,9 @@
 
 Bu proje, her sabah Borsa İstanbul hisselerini ve kripto para verilerini otomatik olarak çekip, **Llama 3.3 (Groq API)** yardımıyla derinlemesine teknik analizler üreten ve bunları kullanıcıya şık bir e-posta bülteni olarak gönderen tam otomatik bir **n8n** akışıdır.
 
+<img width="1665" height="879" alt="image" src="https://github.com/user-attachments/assets/8eeae7cb-dbf6-4ff0-b147-bc5bd1bf8337" />
+
+
 ## 🚀 Özellikler
 - 🕒 **Otomatik Zamanlayıcı (Schedule):** Her sabah belirlenen saatte (Örn: 09:00 TR) otomatik tetiklenme.
 - 📈 **Canlı Finans Verisi:** Yahoo Finance ve Binance API'leri üzerinden canlı veri entegrasyonu (KCHOL, TUPRS, SAHOL, ASELSAN, AYGZ, Kripto ve döviz çiftleri).
