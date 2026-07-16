@@ -3,6 +3,8 @@
 Bu proje, her sabah Borsa İstanbul hisselerini ve kripto para verilerini otomatik olarak çekip, **Llama 3.3 (Groq API)** yardımıyla derinlemesine teknik analizler üreten ve bunları kullanıcıya şık bir e-posta bülteni olarak gönderen tam otomatik bir **n8n** akışıdır.
 
 <img width="1665" height="879" alt="image" src="https://github.com/user-attachments/assets/8eeae7cb-dbf6-4ff0-b147-bc5bd1bf8337" />
+<img width="1530" height="656" alt="borsatakip2" src="https://github.com/user-attachments/assets/3a4a9e35-4100-4e37-a0ce-71de4882fb78" />
+<img width="1549" height="607" alt="image" src="https://github.com/user-attachments/assets/ff8aed73-2f3b-44d1-be44-699bceee5894" />
 
 
 ## 🚀 Özellikler
