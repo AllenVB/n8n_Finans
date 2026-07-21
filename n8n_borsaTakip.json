@@ -6,8 +6,7 @@
         "rule": {
           "interval": [
             {
-              "triggerAtHour": 10,
-              "triggerAtMinute": 30
+              "triggerAtHour": 10
             },
             {
               "triggerAtHour": 13
@@ -18,7 +17,7 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -16,
+        -96,
         -16
       ],
       "id": "2887ccaf-c8fa-46a2-88fe-15b287bee9ae",
@@ -36,8 +35,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1200,
-        0
+        1504,
+        48
       ],
       "id": "eb931e71-c37d-4b25-b405-97f3af9391d3",
       "name": "Send an Email",
@@ -57,8 +56,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        -272
+        96,
+        -288
       ],
       "id": "6faa3c95-9561-4e41-9257-c249ed014fad",
       "name": "Kripto Verileri"
@@ -70,8 +69,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
-        -16
+        560,
+        -96
       ],
       "id": "d046ff03-e2bf-418d-a9dd-8d6fc6780086",
       "name": "Code in JavaScript"
@@ -90,8 +89,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        -16
+        192,
+        -160
       ],
       "id": "f5cddb31-2751-43f7-a5cf-1a951aa64f6e",
       "name": "TUPRS"
@@ -104,8 +103,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        240
+        192,
+        -32
       ],
       "id": "9d5d0b2d-e9c4-4968-95d5-155e1890abcd",
       "name": "ASELSAN"
@@ -118,8 +117,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        112
+        96,
+        -32
       ],
       "id": "572c89e4-6c91-4fd8-9a46-c1458624ebef",
       "name": "SAHOL"
@@ -132,8 +131,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        368
+        96,
+        96
       ],
       "id": "65c8a6bb-38d3-481d-b413-288ce70a8d0c",
       "name": "AYGAZ"
@@ -146,8 +145,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        -128
+        96,
+        -160
       ],
       "id": "800758d0-7f94-412e-a413-dc92be534de5",
       "name": "KCHOL"
@@ -160,7 +159,7 @@
       "typeVersion": 3.2,
       "position": [
         384,
-        -80
+        -160
       ],
       "id": "7dbd4448-5b2c-41a9-b90f-622929bdd1d9",
       "name": "Merge"
@@ -183,8 +182,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        896,
-        -16
+        752,
+        -96
       ],
       "id": "616d9b8d-e28f-4703-aef8-92d0fb745084",
       "name": "Yapay Zeka Analizi",
@@ -197,16 +196,110 @@
     },
     {
       "parameters": {
-        "jsCode": "// Yapay zekanın ürettiği yorumu alıyoruz\nconst aiMetin = $input.first().json.choices?.[0]?.message?.content || \"\";\n\n// İlk JavaScript düğümünden gelen HTML finans tablosunu çekiyoruz\nconst tabloMetin = $('Code in JavaScript').first().json.mail_icerik || \"\";\n\n// İkisini şık ve sade Arial yazı tipinde birleştiriyoruz\nlet finalHtml = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; background-color: #ffffff;\">\n\n  <div style=\"max-width: 650px; margin: 0 auto; padding: 10px;\">\n    \n    <!-- Yapay Zeka Yorum Kutusu (white-space eklenerek boş satırlar korundu) -->\n    <div style=\"background-color: #f4f9f4; border-left: 4px solid #2ecc71; padding: 15px; margin-bottom: 25px; border-radius: 4px; line-height: 1.6;\">\n      <span style=\"font-size: 18px; font-weight: bold; color: #27ae60; display: block; margin-bottom: 12px;\">🤖 Yapay Zeka Teknik Analiz Raporu</span>\n      <p style=\"margin: 0; font-size: 14px; color: #2c3e50; white-space: pre-line; font-family: Arial, sans-serif; line-height: 1.6;\">\n        ${aiMetin}\n      </p>\n    </div>\n\n    <!-- Finans Tablosu -->\n    ${tabloMetin}\n    \n  </div>\n\n</body>\n</html>\n`;\n\n// Türkçe karakterleri asla bozulmayacak HTML Entity kodlarına dönüştürüyoruz\nconst safeHtml = finalHtml\n  .replace(/ç/g, '&#231;')\n  .replace(/Ç/g, '&#199;')\n  .replace(/ğ/g, '&#287;')\n  .replace(/Ğ/g, '&#286;')\n  .replace(/ı/g, '&#305;')\n  .replace(/İ/g, '&#304;')\n  .replace(/ö/g, '&#246;')\n  .replace(/Ö/g, '&#214;')\n  .replace(/ş/g, '&#351;')\n  .replace(/Ş/g, '&#350;')\n  .replace(/ü/g, '&#252;')\n  .replace(/Ü/g, '&#220;');\n\n// n8n'in okuyabilmesi için yeni objeyi dışarı aktarıyoruz\nreturn [{\n  json: {\n    html_body: safeHtml\n  }\n}];"
+        "jsCode": "// 1. Yapay zekanın ürettiği yorumu alıyoruz\nconst aiMetin = $input.first().json.choices?.[0]?.message?.content || \"\";\n\n// 2. İlk JavaScript düğümünden gelen ana finans tablosunu çekiyoruz\nconst tabloMetin = $('Code in JavaScript').first().json.mail_icerik || \"\";\n\n// 3. YENİ: IPO Hesaplayıcı düğümünden halka arz verilerini çekiyoruz\nlet ipoItems = [];\ntry {\n  ipoItems = $('IPO Hesaplayıcı').all().map(item => item.json);\n} catch (e) {\n  ipoItems = [];\n}\n\n// 4. YENİ: Halka Arzlar için ayrı HTML Tablosu oluşturuyoruz\nlet ipoTabloMetin = \"\";\n\nif (ipoItems.length > 0) {\n  ipoTabloMetin = `\n    <!-- Ayrı Halka Arz Performans Kartı -->\n    <div style=\"margin-top: 25px; background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 6px; padding: 15px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 16px; font-weight: bold; color: #2c3e50; display: block; margin-bottom: 12px; border-bottom: 2px solid #27ae60; padding-bottom: 6px;\">\n        🚀 Son 5 Halka Arz Performansı\n      </span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Şirket</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Son Fiyat</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Günlük</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Haftalık</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Toplam Getiri</th>\n          </tr>\n        </thead>\n        <tbody>\n  `;\n\n  ipoItems.forEach(ipo => {\n    const dailyColor = ipo.dailyChange >= 0 ? '#27ae60' : '#e74c3c';\n    const weeklyColor = ipo.weeklyChange >= 0 ? '#27ae60' : '#e74c3c';\n    const totalColor = ipo.totalReturn >= 0 ? '#27ae60' : '#e74c3c';\n\n    const dailySign = ipo.dailyChange > 0 ? '+' : '';\n    const weeklySign = ipo.weeklyChange > 0 ? '+' : '';\n    const totalSign = ipo.totalReturn > 0 ? '+' : '';\n\n    ipoTabloMetin += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 8px; color: #1e293b;\"><b>${ipo.name}</b> (${ipo.symbol})</td>\n        <td style=\"padding: 8px; color: #1e293b;\">₺${ipo.currentPrice}</td>\n        <td style=\"padding: 8px; color: ${dailyColor}; font-weight: bold;\">%${dailySign}${ipo.dailyChange}</td>\n        <td style=\"padding: 8px; color: ${weeklyColor}; font-weight: bold;\">%${weeklySign}${ipo.weeklyChange}</td>\n        <td style=\"padding: 8px; color: ${totalColor}; font-weight: bold;\">%${totalSign}${ipo.totalReturn}</td>\n      </tr>\n    `;\n  });\n\n  ipoTabloMetin += `\n        </tbody>\n      </table>\n    </div>\n  `;\n}\n\n// 5. Tüm parçaları (AI Raporu + Ana Finans Tablosu + Halka Arz Tablosu) şablonda birleştiriyoruz\nlet finalHtml = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; background-color: #ffffff;\">\n\n  <div style=\"max-width: 650px; margin: 0 auto; padding: 10px;\">\n    \n    <!-- Yapay Zeka Yorum Kutusu -->\n    <div style=\"background-color: #f4f9f4; border-left: 4px solid #2ecc71; padding: 15px; margin-bottom: 25px; border-radius: 4px; line-height: 1.6;\">\n      <span style=\"font-size: 18px; font-weight: bold; color: #27ae60; display: block; margin-bottom: 12px;\">🤖 Yapay Zeka Teknik Analiz Raporu</span>\n      <p style=\"margin: 0; font-size: 14px; color: #2c3e50; white-space: pre-line; font-family: Arial, sans-serif; line-height: 1.6;\">\n        ${aiMetin}\n      </p>\n    </div>\n\n    <!-- Ana Finans Tablosu -->\n    ${tabloMetin}\n\n    <!-- Son 5 Halka Arz Tablosu -->\n    ${ipoTabloMetin}\n    \n  </div>\n\n</body>\n</html>\n`;\n\n// 6. Türkçe karakterleri asla bozulmayacak HTML Entity kodlarına dönüştürüyoruz\nconst safeHtml = finalHtml\n  .replace(/ç/g, '&#231;')\n  .replace(/Ç/g, '&#199;')\n  .replace(/ğ/g, '&#287;')\n  .replace(/Ğ/g, '&#286;')\n  .replace(/ı/g, '&#305;')\n  .replace(/İ/g, '&#304;')\n  .replace(/ö/g, '&#246;')\n  .replace(/Ö/g, '&#214;')\n  .replace(/ş/g, '&#351;')\n  .replace(/Ş/g, '&#350;')\n  .replace(/ü/g, '&#252;')\n  .replace(/Ü/g, '&#220;');\n\n// 7. n8n çıktısı\nreturn [{\n  json: {\n    html_body: safeHtml\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1056,
-        160
+        1280,
+        48
       ],
       "id": "8e575e46-3586-4ad7-96b3-3b23e4211335",
-      "name": "Code in JavaScript1"
+      "name": "Code in JavaScript1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "https://halkarz.com/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        96,
+        224
+      ],
+      "id": "8324bb39-7885-431d-bd02-3cd31ba5af8f",
+      "name": "Halkarz Web Scraping"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputJson = $input.first().json;\nlet rawHtml = inputJson.data || inputJson.body || (typeof inputJson === 'string' ? inputJson : JSON.stringify(inputJson));\n\nfunction fixTurkishText(str) {\n  if (!str) return \"\";\n  let text = str.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '\"');\n  const map = {\n    '脟': 'Ç', 'Ã‡': 'Ç', '脧': 'Ç', '莽': 'ç', 'Ã§': 'ç',\n    '脛臑': 'Ğ', 'ÄĞ': 'Ğ', '脛鸥': 'ğ', 'ÄŸ': 'ğ',\n    '脛脛': 'İ', 'Ä°': 'İ', '陌': 'İ', '脛卤': 'ı', 'Ä±': 'ı', '谋': 'ı',\n    '脰': 'Ö', 'Ã–': 'Ö', '枚': 'ö', 'Ã¶': 'ö',\n    '艦': 'Ş', 'Åž': 'Ş', '艧': 'ş', 'ÅŸ': 'ş',\n    '脺': 'Ü', 'Ãœ': 'Ü', '眉': 'ü', 'Ã¼': 'ü', 'ï¿½': ''\n  };\n  for (const [bad, good] of Object.entries(map)) {\n    text = text.split(bad).join(good);\n  }\n  return text.trim();\n}\n\nconst extractedIpos = [];\nconst seenSymbols = new Set();\nconst articleRegex = /<article[^>]*class=[\"'][^\"']*index-list[^\"']*[\"'][^>]*>(.*?)<\\/article>/gis;\n\nlet match;\n\nwhile ((match = articleRegex.exec(rawHtml)) !== null) {\n  const blockHtml = match[1];\n\n  // A. BIST Kodu\n  const bistMatch = blockHtml.match(/class=[\"'][^\"']*il-bist-kod[^\"']*[\"'][^>]*>\\s*([A-Z0-9]{3,6})\\s*<\\/span>/i);\n  if (!bistMatch) continue;\n  const symbol = bistMatch[1].trim();\n\n  // B. Rozet Filtresi\n  const hasNewClass = blockHtml.includes('il-new') || /class=[\"'][^\"']*il-new[^\"']*[\"']/i.test(blockHtml);\n  const blockTextLower = blockHtml.toLowerCase();\n\n  const isPending = hasNewClass || \n                    blockTextLower.includes('yeni!') || \n                    blockTextLower.includes('il-tt') || \n                    blockTextLower.includes('talep toplan') || \n                    blockTextLower.includes('taslak') || \n                    blockTextLower.includes('spk');\n\n  if (isPending) continue;\n\n  // C. Şirket Adı\n  let companyName = \"\";\n  const nameMatch = blockHtml.match(/class=[\"'][^\"']*il-halka-arz-sirket[^\"']*[\"'][^>]*>(.*?)<\\/h3>/i);\n  if (nameMatch) {\n    companyName = nameMatch[1];\n  } else {\n    const titleAttrMatch = blockHtml.match(/title=[\"']([^\"']+)[\"']/i);\n    if (titleAttrMatch) companyName = titleAttrMatch[1];\n  }\n  companyName = fixTurkishText(companyName);\n\n  // D. Detay Sayfası Linki\n  const urlMatch = blockHtml.match(/href=[\"']([^\"']+)[\"']/i);\n  const url = urlMatch ? urlMatch[1] : \"\";\n\n  if (symbol && !seenSymbols.has(symbol) && /^[A-Z0-9]{3,6}$/.test(symbol)) {\n    seenSymbols.add(symbol);\n    extractedIpos.push({\n      symbol: `${symbol}.IS`,\n      name: companyName || symbol,\n      url: url,\n      status: \"İşlem Gören\"\n    });\n  }\n\n  if (extractedIpos.length === 5) break;\n}\n\nreturn extractedIpos.map(ipo => ({ json: ipo }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        224
+      ],
+      "id": "f6e08ffa-a656-4263-936b-c9f269f9a45c",
+      "name": "Halka Arz Kazıyıcı",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $('Halka Arz Kazıyıcı').item.json.symbol }}?interval=1d&range=1mo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        224
+      ],
+      "id": "f71c4edf-859b-40d0-a077-b94a69aacef0",
+      "name": "Yahoo Finance IPO Fetch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nconst items = $input.all();\n\n// 1. Detay sayfalarından (IPO Detay Fetch) orijinal halka arz fiyatlarını okuyoruz\nconst detailItems = $('IPO Detay Fetch').all();\nconst scraperItems = $('Halka Arz Kazıyıcı').all();\n\nconst infoMap = {};\n\nscraperItems.forEach((scItem, idx) => {\n  const symbol = scItem.json.symbol;\n  const detailHtml = detailItems[idx]?.json?.data || detailItems[idx]?.json?.body || \"\";\n  \n  let ipoPrice = 0;\n  const priceMatch = \n    detailHtml.match(/Halka\\s*Arz\\s*Fiyat[ıi\\/]*[\\s\\S]*?<strong[^>]*>\\s*([0-9]{1,4}[.,][0-9]{2})\\s*(?:TL|₺)\\s*<\\/strong>/i) ||\n    detailHtml.match(/<strong[^>]*class=[\"'][^\"']*f700[^\"']*[\"'][^>]*>\\s*([0-9]{1,4}[.,][0-9]{2})\\s*(?:TL|₺)\\s*<\\/strong>/i) ||\n    detailHtml.match(/([0-9]{1,4}[.,][0-9]{2})\\s*(?:TL|₺)/i);\n\n  if (priceMatch) {\n    ipoPrice = parseFloat(priceMatch[1].replace(/\\./g, '').replace(',', '.'));\n  }\n\n  infoMap[symbol] = {\n    name: scItem.json.name,\n    ipoPrice: ipoPrice\n  };\n});\n\n// 2. Yahoo Finance verileriyle kesin 5 iş günü hesaplaması yapıyoruz\nfor (const item of items) {\n  const yahooData = item.json;\n  const chartResult = yahooData.chart?.result?.[0];\n  \n  if (!chartResult) continue;\n\n  const fullSymbol = chartResult.meta.symbol;\n  const cleanSymbol = fullSymbol.replace('.IS', '');\n  const companyInfo = infoMap[fullSymbol] || { name: cleanSymbol, ipoPrice: 0 };\n  \n  const rawQuotes = chartResult.indicators?.quote?.[0]?.close || [];\n  const cleanQuotes = rawQuotes.filter(p => p !== null && p !== undefined);\n  \n  if (cleanQuotes.length === 0) continue;\n\n  const currentPrice = chartResult.meta.regularMarketPrice || cleanQuotes[cleanQuotes.length - 1];\n  \n  // A. GÜNLÜK DEĞİŞİM (%) - BIST %10 Tavan/Taban Limitli\n  let prevClose = cleanQuotes.length >= 2 ? cleanQuotes[cleanQuotes.length - 2] : (chartResult.meta.chartPreviousClose || currentPrice);\n  let dailyChange = prevClose > 0 && prevClose !== currentPrice ? ((currentPrice - prevClose) / prevClose) * 100 : 0;\n\n  if (dailyChange > 10) dailyChange = 10.00;\n  if (dailyChange < -10) dailyChange = -10.00;\n\n  // B. HAFTALIK DEĞİŞİM (%) - Kesin Olarak \"Son 5 İş Günü\" (5 Seans Önceki Kapanış vs Bugün)\n  let weeklyChange = 0;\n  if (cleanQuotes.length >= 6) {\n    // Bugün (cleanQuotes.length - 1) ile TAM 5 İŞ GÜNÜ ÖNCEKİ (cleanQuotes.length - 6) kapanış karşılaştırılır\n    const fiveTradingDaysAgoPrice = cleanQuotes[cleanQuotes.length - 6];\n    weeklyChange = fiveTradingDaysAgoPrice > 0 ? ((currentPrice - fiveTradingDaysAgoPrice) / fiveTradingDaysAgoPrice) * 100 : 0;\n  } else {\n    // Eğer hisse henüz 5 iş gününden az süredir borsa ortamında işlem görüyorsa: İlk Borsa Günü Kapanışı -> Bugün\n    const firstDayPrice = cleanQuotes[0];\n    weeklyChange = firstDayPrice > 0 ? ((currentPrice - firstDayPrice) / firstDayPrice) * 100 : 0;\n  }\n\n  // C. TOPLAM GETİRİ (%): Orijinal Halka Arz Fiyatından (Örn: 70,00 TL) Hesaplama\n  let totalReturn = 0;\n  const basePrice = companyInfo.ipoPrice > 0 ? companyInfo.ipoPrice : cleanQuotes[0];\n  if (basePrice > 0) {\n    totalReturn = ((currentPrice - basePrice) / basePrice) * 100;\n  }\n\n  results.push({\n    json: {\n      symbol: cleanSymbol,\n      name: companyInfo.name,\n      ipoPrice: companyInfo.ipoPrice,\n      currentPrice: Number(currentPrice.toFixed(2)),\n      dailyChange: Number(dailyChange.toFixed(2)),\n      weeklyChange: Number(weeklyChange.toFixed(2)),\n      totalReturn: Number(totalReturn.toFixed(2)),\n      tradingDays: cleanQuotes.length\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        224
+      ],
+      "id": "423fa596-c5f8-4311-a285-72ab872f7f33",
+      "name": "IPO Hesaplayıcı"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        48
+      ],
+      "id": "c195684b-93a9-469e-ada3-65ec84e8a776",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        512,
+        224
+      ],
+      "id": "7d2c6035-15cd-442f-b226-8f04205ed46e",
+      "name": "IPO Detay Fetch"
     }
   ],
   "pinData": {},
@@ -241,6 +334,11 @@
           },
           {
             "node": "KCHOL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Halkarz Web Scraping",
             "type": "main",
             "index": 0
           }
@@ -339,7 +437,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript1",
+            "node": "Merge1",
             "type": "main",
             "index": 0
           }
@@ -356,6 +454,72 @@
           }
         ]
       ]
+    },
+    "Halkarz Web Scraping": {
+      "main": [
+        [
+          {
+            "node": "Halka Arz Kazıyıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Halka Arz Kazıyıcı": {
+      "main": [
+        [
+          {
+            "node": "IPO Detay Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yahoo Finance IPO Fetch": {
+      "main": [
+        [
+          {
+            "node": "IPO Hesaplayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IPO Hesaplayıcı": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IPO Detay Fetch": {
+      "main": [
+        [
+          {
+            "node": "Yahoo Finance IPO Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -366,7 +530,7 @@
     "timeSavedMode": "fixed",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "c0ebd095-4d66-4935-b7b1-e962947394e3",
+  "versionId": "739aa611-3cd5-4429-9d1f-b69ee7436fb3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a19f6f4a2cbad2d63a3335d6926812c476751f5c468d7fe70110ec6e7c10b986"
