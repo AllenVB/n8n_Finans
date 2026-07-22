@@ -1,0 +1,305 @@
+{
+  "name": "İnteraktif Telegram Komut Motoru",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a216a572-2de9-4e16-86ba-872eed633d4b",
+      "name": "Telegram Trigger",
+      "webhookId": "32aff7d4-ff64-471c-8fd2-eb132acd3e5d",
+      "credentials": {
+        "telegramApi": {
+          "id": "2nA1ZFs4luEKWlWX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const messageText = $json.message?.text || \"\";\nconst chatId = $json.message?.chat?.id;\n\n// Kullanıcı /analiz THYAO veya /analiz BTC yazdı mı?\nif (messageText.toLowerCase().startsWith('/analiz')) {\n  const parts = messageText.trim().split(/\\s+/);\n  const rawSymbol = parts[1] ? parts[1].toUpperCase() : null;\n\n  if (rawSymbol) {\n    // Yahoo Finance / Kripto sembol dönüştürme\n    let yahooSymbol = rawSymbol;\n    if (['BTC', 'ETH', 'XRP', 'SOL', 'EIGEN'].includes(rawSymbol)) {\n      yahooSymbol = `${rawSymbol}-USD`;\n    } else if (!rawSymbol.includes('.') && !rawSymbol.includes('-')) {\n      yahooSymbol = `${rawSymbol}.IS`; // BİST hisseleri için .IS takısı\n    }\n\n    return [{\n      json: {\n        chat_id: chatId,\n        symbol: rawSymbol,\n        yahoo_symbol: yahooSymbol,\n        valid: true\n      }\n    }];\n  }\n}\n\nreturn [{\n  json: {\n    chat_id: chatId,\n    valid: false,\n    error_msg: \"⚠️ Lütfen geçerli bir format yazın. Örnek: <code>/analiz THYAO</code> veya <code>/analiz BTC</code>\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ab960c9f-92aa-4ac4-84b5-4de3322fc4b8",
+      "name": "Komut Kontrol"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fb2249d9-d81b-4df6-8055-7e46bbdda31b",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "dd17d732-2df2-43c6-b49e-70d8ce4413b2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.error_msg }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        224
+      ],
+      "id": "84cb4dad-3f4e-4e0d-92ae-e75a274643a2",
+      "name": "Send a text message",
+      "webhookId": "061b96f0-3126-48f2-8e97-85efef44fcad",
+      "credentials": {
+        "telegramApi": {
+          "id": "2nA1ZFs4luEKWlWX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.yahoo_symbol }}?range=1y&interval=1d",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "98b36946-8b5c-401f-a194-7ed23a0e1c61",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Komut Kontrol').first().json.chat_id }}",
+        "text": "={{ $json.choices[0].message.content }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        -160
+      ],
+      "id": "0d2b76bb-a151-4f9a-9b42-b4e7b2583c3a",
+      "name": "Send a text message1",
+      "webhookId": "300eac7f-8f90-472c-846f-758e337ed38d",
+      "credentials": {
+        "telegramApi": {
+          "id": "2nA1ZFs4luEKWlWX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer gsk_YOUR_GROQ_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  (() => {\n    const chartData = $('HTTP Request').first().json?.chart?.result?.[0];\n    const meta = chartData?.meta || {};\n    const quotes = chartData?.indicators?.quote?.[0] || {};\n    const closes = (quotes.close || []).filter(v => v !== null && v !== undefined);\n    const volumes = (quotes.volume || []).filter(v => v !== null && v !== undefined);\n\n    const calcSMA = (data, period) => {\n      if (data.length < period) return \"N/A\";\n      const slice = data.slice(-period);\n      return (slice.reduce((a, b) => a + b, 0) / period).toFixed(2);\n    };\n\n    // ~1.200 Token'lık Tam Donanımlı Teknik Veri Seti\n    const optimizedData = {\n      symbol: meta.symbol,\n      price: meta.regularMarketPrice,\n      prevClose: meta.chartPreviousClose,\n      high52: meta.fiftyTwoWeekHigh,\n      low52: meta.fiftyTwoWeekLow,\n      sma: {\n        sma20: calcSMA(closes, 20),\n        sma50: calcSMA(closes, 50),\n        sma200: calcSMA(closes, 200)\n      },\n      volume: {\n        last: volumes.slice(-1)[0] || \"N/A\",\n        avg30: volumes.length >= 30 ? Math.round(volumes.slice(-30).reduce((a,b)=>a+b,0)/30) : \"N/A\"\n      },\n      last15Closes: closes.slice(-15).map(v => v.toFixed(2))\n    };\n\n    return {\n      \"model\": \"llama-3.3-70b-versatile\",\n      \"messages\": [\n        {\n          \"role\": \"system\",\n          \"content\": \"Sen Senior Quant Analistisin. Sana iletilen TEKNİK VERİ SETİ (SMA 20/50/200, Hacim, Son 15 Günlük Fiyatlar) ve TRADINGVIEW FİKİRLERİNİ sentezleyerek Telegram HTML formatında NİCEL ANALİZ RAPORU sunacaksın.\\n\\nANALİZ ADIMLARI:\\n1. Fiyatın SMA20, SMA50 ve SMA200'e göre konumunu (Golden/Death Cross, destek/direnç) incele.\\n2. Son hacim ile 30 günlük ortalama hacmi kıyaslayıp hacim gücünü belirt.\\n3. TradingView analistlerinin gördüğü teknik formasyonları ekle.\\n4. SADECE Telegram HTML etiketleri (<b>, <i>) kullan.\\n\\nÇIKTI FORMATI:\\n🔍 <b>NİCEL ANALİZ RAPORU: VARLIK_ADI</b>\\n───────────────\\n💵 <b>Canlı Fiyat:</b> ...\\n📈 <b>Hareketli Ortalamalar:</b> SMA20: ... | SMA50: ... | SMA200: ...\\n📊 <b>Hacim Gücü:</b> ...\\n🎯 <b>Kritik Destek & Direnç:</b> Destek: ... | Direnç: ...\\n\\n📊 <b>TRADINGVIEW TEKNİK GRAFİK HİSSİYATI</b>\\n• [TradingView analist yorumları]\\n\\n🧠 <b>YAPAY ZEKA NİCEL STRATEJİSİ</b>\\n<b>Tavsiye Kararı:</b> 🟢 GÜÇLÜ AL / 🟢 DİP ALIMI / 🟡 NÖTR-BEKLE / 🔴 SAT\\n<b>Gerekçeli Not:</b> [SMA ortalamaları, trend ve TradingView verilerinin sentezine dayalı 2-3 cümlelik net yönlendirme]\"\n        },\n        {\n          \"role\": \"user\",\n          \"content\": \"TEKNİK VERİ:\\n\" + JSON.stringify(optimizedData) + \"\\n\\nTRADINGVIEW FİKİRLERİ:\\n\" + ($json.tradingview_summary || \"Özel TradingView fikri bulunamadı.\")\n        }\n      ],\n      \"temperature\": 0.2\n    };\n  })()\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        -160
+      ],
+      "id": "c95932ae-c163-4144-a6f9-3d68793959ff",
+      "name": "Yapay Zeka Yorumlayıcı"
+    },
+    {
+      "parameters": {
+        "url": "https://www.tradingview.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        -160
+      ],
+      "id": "0dfd1aa4-5636-4d3f-a7d9-2997f8652bf2",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet tvIdeas = \"Bu varlık için anlık özel TradingView fikri bulunamadı.\";\n\nif (items && items.length > 0) {\n  const selected = items.slice(0, 3);\n  tvIdeas = selected.map((item, index) => {\n    const title = item.json.title || '';\n    const snippet = item.json.contentSnippet || item.json.content || '';\n    const cleanSnippet = snippet.replace(/<[^>]*>?/gm, '').slice(0, 180); \n    return `${index + 1}. ${title}: ${cleanSnippet}...`;\n  }).join('\\n');\n}\n\nreturn [{\n  json: {\n    tradingview_summary: tvIdeas\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        -160
+      ],
+      "id": "6490f1db-c770-4c7f-bcda-33086788adb0",
+      "name": "TV Filtre"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Komut Kontrol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Komut Kontrol": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yapay Zeka Yorumlayıcı": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "TV Filtre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TV Filtre": {
+      "main": [
+        [
+          {
+            "node": "Yapay Zeka Yorumlayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c70ac2c8-194d-491c-adc9-363a2a83e124",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a19f6f4a2cbad2d63a3335d6926812c476751f5c468d7fe70110ec6e7c10b986"
+  },
+  "nodeGroups": [],
+  "id": "D4IN1f89WHvzDgiR",
+  "tags": []
+}

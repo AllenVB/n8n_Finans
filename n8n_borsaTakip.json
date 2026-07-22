@@ -6,7 +6,8 @@
         "rule": {
           "interval": [
             {
-              "triggerAtHour": 10
+              "triggerAtHour": 10,
+              "triggerAtMinute": 15
             },
             {
               "triggerAtHour": 13
@@ -17,8 +18,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -96,
-        -16
+        -256,
+        -48
       ],
       "id": "2887ccaf-c8fa-46a2-88fe-15b287bee9ae",
       "name": "Schedule Trigger",
@@ -35,8 +36,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1504,
-        48
+        1888,
+        -64
       ],
       "id": "eb931e71-c37d-4b25-b405-97f3af9391d3",
       "name": "Send an Email",
@@ -50,159 +51,13 @@
     },
     {
       "parameters": {
-        "url": "=https://api.binance.com/api/v3/ticker/24hr?symbols=[\"BTCUSDT\",\"ETHUSDT\",\"XRPUSDT\",\"SOLUSDT\",\"PAXGUSDT\",\"USDTTRY\"]",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        96,
-        -288
-      ],
-      "id": "6faa3c95-9561-4e41-9257-c249ed014fad",
-      "name": "Kripto Verileri"
-    },
-    {
-      "parameters": {
-        "jsCode": "const tumGirdiler = $input.all();\n\nconst kriptoMap = {};\nconst borsaGirdileri = [];\n\n// Gelen tüm verileri yapılarına göre otomatik ayrıştırıyoruz\nfor (const girdi of tumGirdiler) {\n  const data = girdi.json;\n  \n  if (data.symbol && data.lastPrice !== undefined) {\n    kriptoMap[data.symbol] = {\n      price: parseFloat(data.lastPrice || 0),\n      change: parseFloat(data.priceChangePercent || 0)\n    };\n  }\n  \n  if (data.chart && data.chart.result) {\n    borsaGirdileri.push(data);\n  }\n}\n\n// HTML E-posta Tablosunun Başlangıcı ve Tasarımı\nlet html = `\n<table border=\"1\" cellpadding=\"8\" style=\"border-collapse: collapse; font-family: Arial, sans-serif; width: 100%; max-width: 650px; border: 1px solid #ddd;\">\n  <thead>\n    <tr style=\"background-color: #f2f2f2; text-align: left;\">\n      <th style=\"border: 1px solid #ddd;\">Varlık Adı</th>\n      <th style=\"border: 1px solid #ddd;\">Son Fiyat</th>\n      <th style=\"border: 1px solid #ddd;\">Günlük (24s)</th>\n      <th style=\"border: 1px solid #ddd;\">Haftalık (7g)</th>\n      <th style=\"border: 1px solid #ddd;\">Aylık (30g)</th>\n    </tr>\n  </thead>\n  <tbody>\n`;\n\n// Yapay zekaya gönderilecek temiz veri metni\nlet aiGirdisi = \"BUGÜNKÜ FİNANS PİYASASI VERİLERİ:\\n\\n\";\n\n// Değişim yüzdelerini şık yeşil/kırmızı oklara çeviren yardımcı fonksiyon\nfunction formatSpan(val) {\n  if (val === null || val === undefined) return `<span style=\"color: #999;\">-</span>`;\n  const renk = val >= 0 ? \"green\" : \"red\";\n  const ok = val >= 0 ? \"▲ +\" : \"▼ \";\n  return `<span style=\"color: ${renk}; font-weight: bold;\">${ok}${val.toFixed(2)}%</span>`;\n}\n\n// Tabloya satır ekleme fonksiyonu\nfunction tabloSatiriEkle(isim, sayiFiyat, sayiDegisimGunluk, sayiDegisimHaftalik, sayiDegisimAylik, birim) {\n  let formatliFiyat = \"\";\n  if (birim === \"USD\") {\n    formatliFiyat = \"$\" + sayiFiyat.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });\n  } else if (birim === \"TL\") {\n    formatliFiyat = sayiFiyat.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + \" TL\";\n  }\n\n  return `\n    <tr>\n      <td style=\"border: 1px solid #ddd;\"><b>${isim}</b></td>\n      <td style=\"border: 1px solid #ddd; font-weight: bold;\">${formatliFiyat}</td>\n      <td style=\"border: 1px solid #ddd;\">${formatSpan(sayiDegisimGunluk)}</td>\n      <td style=\"border: 1px solid #ddd;\">${formatSpan(sayiDegisimHaftalik)}</td>\n      <td style=\"border: 1px solid #ddd;\">${formatSpan(sayiDegisimAylik)}</td>\n    </tr>\n  `;\n}\n\n// --- 1. KRİPTO PARALAR (USD) ---\nif (kriptoMap[\"BTCUSDT\"]) {\n  const p = kriptoMap[\"BTCUSDT\"].price;\n  const c = kriptoMap[\"BTCUSDT\"].change;\n  html += tabloSatiriEkle(\"Bitcoin (BTC)\", p, c, null, null, \"USD\");\n  aiGirdisi += `- Bitcoin: $${p.toFixed(2)} (Günlük: %${c.toFixed(2)})\\n`;\n}\nif (kriptoMap[\"ETHUSDT\"]) {\n  const p = kriptoMap[\"ETHUSDT\"].price;\n  const c = kriptoMap[\"ETHUSDT\"].change;\n  html += tabloSatiriEkle(\"Ethereum (ETH)\", p, c, null, null, \"USD\");\n  aiGirdisi += `- Ethereum: $${p.toFixed(2)} (Günlük: %${c.toFixed(2)})\\n`;\n}\nif (kriptoMap[\"SOLUSDT\"]) {\n  const p = kriptoMap[\"SOLUSDT\"].price;\n  const c = kriptoMap[\"SOLUSDT\"].change;\n  html += tabloSatiriEkle(\"Solana (SOL)\", p, c, null, null, \"USD\");\n  aiGirdisi += `- Solana: $${p.toFixed(2)} (Günlük: %${c.toFixed(2)})\\n`;\n}\nif (kriptoMap[\"XRPUSDT\"]) {\n  const p = kriptoMap[\"XRPUSDT\"].price;\n  const c = kriptoMap[\"XRPUSDT\"].change;\n  html += tabloSatiriEkle(\"Ripple (XRP)\", p, c, null, null, \"USD\");\n  aiGirdisi += `- Ripple: $${p.toFixed(2)} (Günlük: %${c.toFixed(2)})\\n`;\n}\n\n// --- 2. DÖVİZ VE ALTIN HESAPLAMALARI (TL) ---\nlet usdTryPrice = 1;\nif (kriptoMap[\"USDTTRY\"]) {\n  usdTryPrice = kriptoMap[\"USDTTRY\"].price;\n  const c = kriptoMap[\"USDTTRY\"].change;\n  html += tabloSatiriEkle(\"Dolar (USD/TRY)\", usdTryPrice, c, null, null, \"TL\");\n  aiGirdisi += `- Dolar Kuru: ${usdTryPrice.toFixed(2)} TL (Günlük: %${c.toFixed(2)})\\n`;\n}\n\nlet gramAltinPrice = 0;\nlet altinChange = 0;\nif (kriptoMap[\"PAXGUSDT\"]) {\n  const paxgUsd = kriptoMap[\"PAXGUSDT\"].price;\n  altinChange = kriptoMap[\"PAXGUSDT\"].change;\n  gramAltinPrice = (paxgUsd * usdTryPrice) / 31.1035;\n  html += tabloSatiriEkle(\"Gram Altın\", gramAltinPrice, altinChange, null, null, \"TL\");\n  aiGirdisi += `- Gram Altın: ${gramAltinPrice.toFixed(2)} TL (Günlük: %${altinChange.toFixed(2)})\\n`;\n}\n\nif (gramAltinPrice > 0) {\n  const ceyrekAltinPrice = gramAltinPrice * 1.6065;\n  html += tabloSatiriEkle(\"Çeyrek Altın\", ceyrekAltinPrice, altinChange, null, null, \"TL\");\n  aiGirdisi += `- Çeyrek Altın: ${ceyrekAltinPrice.toFixed(2)} TL\\n`;\n}\n\nconst borsaIsimleri = {\n  \"KCHOL.IS\": \"Koç Holding (KCHOL)\",\n  \"ASELS.IS\": \"Aselsan (ASELS)\",\n  \"TUPRS.IS\": \"Tüpraş (TUPRS)\",\n  \"SAHOL.IS\": \"Sabancı Holding (SAHOL)\",\n  \"AYGZ.IS\": \"Aygaz (AYGZ)\",\n  \"FROTO.IS\": \"Ford Otosan (FROTO)\"\n};\n\n// --- 3. BORSA İSTANBUL HİSSELERİ (TL) ---\nfor (const borsaData of borsaGirdileri) {\n  if (borsaData.chart && borsaData.chart.result) {\n    const result = borsaData.chart.result[0];\n    const meta = result.meta;\n    const symbol = meta.symbol;\n    const price = meta.regularMarketPrice;\n    \n    const closes = result.indicators && result.indicators.quote && result.indicators.quote[0] && result.indicators.quote[0].close\n      ? result.indicators.quote[0].close.filter(c => c !== null && c !== undefined)\n      : [];\n\n    let dailyChangePercent = 0;\n    let weeklyChangePercent = 0;\n    let monthlyChangePercent = 0;\n\n    const prevDaily = meta.previousClose || (closes.length >= 2 ? closes[closes.length - 2] : price);\n    dailyChangePercent = prevDaily ? ((price - prevDaily) / prevDaily) * 100 : 0;\n\n    const prevWeekly = closes.length >= 6 ? closes[closes.length - 6] : closes[0];\n    weeklyChangePercent = prevWeekly ? ((price - prevWeekly) / prevWeekly) * 100 : 0;\n\n    const prevMonthly = closes[0];\n    monthlyChangePercent = prevMonthly ? ((price - prevMonthly) / prevMonthly) * 100 : 0;\n\n    const isim = borsaIsimleri[symbol] || symbol;\n    html += tabloSatiriEkle(isim, price, dailyChangePercent, weeklyChangePercent, monthlyChangePercent, \"TL\");\n    \n    aiGirdisi += `- ${isim}: ${price.toFixed(2)} TL (Günlük: %${dailyChangePercent.toFixed(2)}, Haftalık: %${weeklyChangePercent.toFixed(2)}, Aylık: %${monthlyChangePercent.toFixed(2)})\\n`;\n  }\n}\n\nhtml += `</tbody></table>`;\nreturn [{ json: { mail_icerik: html, ai_girdisi: aiGirdisi } }];"
+        "jsCode": "// ==========================================\n// 1. DÜĞÜMLERDEN VERİ ÇEKME\n// ==========================================\nlet aiMetin = \"\";\ntry { aiMetin = $('Yapay Zeka Analizi').first()?.json?.choices?.[0]?.message?.content || \"\"; } catch (e) {}\n\nlet bistItems = [];\ntry { bistItems = $('BIST Hesaplayıcı').all().map(i => i.json); } catch (e) {}\n\nlet ipoItems = [];\ntry { ipoItems = $('IPO Hesaplayıcı').all().map(i => i.json); } catch (e) {}\n\nlet cryptoItems = [];\ntry { cryptoItems = $('Kripto Hesaplayıcı').all().map(i => i.json); } catch (e) {}\n\nlet metalItems = [];\ntry { metalItems = $('Maden Hesaplayıcı').first()?.json?.metals || []; } catch (e) {}\n\nconst renderTd = (val) => {\n  const color = val >= 0 ? '#27ae60' : '#e74c3c';\n  const sign = val > 0 ? '+' : '';\n  return `<td style=\"padding: 6px 8px; color: ${color}; font-weight: bold;\">%${sign}${val}</td>`;\n};\n\n// ==========================================\n// 2. HTML TABLOLARI (GÜNLÜK, HAFTALIK, AYLIK, 3 AYLIK, YILLIK)\n// ==========================================\n\nlet aiHtml = aiMetin ? `\n  <div style=\"background-color: #f4f9f4; border-left: 4px solid #2ecc71; padding: 15px; margin-bottom: 20px; border-radius: 4px; line-height: 1.6;\">\n    <span style=\"font-size: 16px; font-weight: bold; color: #27ae60; display: block; margin-bottom: 8px;\">🤖 Yapay Zeka Teknik Analiz Raporu</span>\n    <p style=\"margin: 0; font-size: 13px; color: #2c3e50; white-space: pre-line; font-family: Arial, sans-serif;\">${aiMetin}</p>\n  </div>` : \"\";\n\n// Değerli Madenler Tablosu\nlet metalHtml = \"\";\nif (metalItems.length > 0) {\n  metalHtml = `\n    <div style=\"margin-top: 20px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 15px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 8px; border-bottom: 2px solid #eab308; padding-bottom: 4px;\">🏆 Değerli Madenler & Döviz</span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 6px 8px;\">Varlık</th>\n            <th style=\"padding: 6px 8px;\">Fiyat</th>\n            <th style=\"padding: 6px 8px;\">Günlük</th>\n            <th style=\"padding: 6px 8px;\">Haftalık</th>\n            <th style=\"padding: 6px 8px;\">Aylık</th>\n            <th style=\"padding: 6px 8px;\">3 Aylık</th>\n            <th style=\"padding: 6px 8px;\">Yıllık</th>\n          </tr>\n        </thead>\n        <tbody>`;\n  metalItems.forEach(m => {\n    metalHtml += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 6px 8px;\"><b>${m.name}</b></td>\n        <td style=\"padding: 6px 8px;\">${m.price}</td>\n        ${renderTd(m.dailyChange)}\n        ${renderTd(m.weeklyChange)}\n        ${renderTd(m.monthlyChange)}\n        ${renderTd(m.threeMonthChange)}\n        ${renderTd(m.yearlyChange)}\n      </tr>`;\n  });\n  metalHtml += `</tbody></table></div>`;\n}\n\n// Kripto Para Tablosu\nlet cryptoHtml = \"\";\nif (cryptoItems.length > 0) {\n  cryptoHtml = `\n    <div style=\"margin-top: 20px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 15px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 8px; border-bottom: 2px solid #f59e0b; padding-bottom: 4px;\">🪙 Kripto Para Piyasası</span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 6px 8px;\">Varlık</th>\n            <th style=\"padding: 6px 8px;\">Fiyat ($)</th>\n            <th style=\"padding: 6px 8px;\">Günlük</th>\n            <th style=\"padding: 6px 8px;\">Haftalık</th>\n            <th style=\"padding: 6px 8px;\">Aylık</th>\n            <th style=\"padding: 6px 8px;\">3 Aylık</th>\n            <th style=\"padding: 6px 8px;\">Yıllık</th>\n          </tr>\n        </thead>\n        <tbody>`;\n  cryptoItems.forEach(c => {\n    cryptoHtml += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 6px 8px;\"><b>${c.name}</b></td>\n        <td style=\"padding: 6px 8px;\">$${c.priceUsd}</td>\n        ${renderTd(c.dailyChange)}\n        ${renderTd(c.weeklyChange)}\n        ${renderTd(c.monthlyChange)}\n        ${renderTd(c.threeMonthChange)}\n        ${renderTd(c.yearlyChange)}\n      </tr>`;\n  });\n  cryptoHtml += `</tbody></table></div>`;\n}\n\n// BIST Hisse Tablosu\nlet bistHtml = \"\";\nif (bistItems.length > 0) {\n  bistHtml = `\n    <div style=\"margin-top: 20px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 15px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 8px; border-bottom: 2px solid #3b82f6; padding-bottom: 4px;\">📈 BIST Hisse Portföyü</span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 6px 8px;\">Hisse</th>\n            <th style=\"padding: 6px 8px;\">Son Fiyat</th>\n            <th style=\"padding: 6px 8px;\">Günlük</th>\n            <th style=\"padding: 6px 8px;\">Haftalık</th>\n            <th style=\"padding: 6px 8px;\">Aylık</th>\n            <th style=\"padding: 6px 8px;\">3 Aylık</th>\n            <th style=\"padding: 6px 8px;\">Yıllık</th>\n          </tr>\n        </thead>\n        <tbody>`;\n  bistItems.forEach(b => {\n    bistHtml += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 6px 8px;\"><b>${b.name}</b> (${b.symbol})</td>\n        <td style=\"padding: 6px 8px;\">₺${b.currentPrice}</td>\n        ${renderTd(b.dailyChange)}\n        ${renderTd(b.weeklyChange)}\n        ${renderTd(b.monthlyChange)}\n        ${renderTd(b.threeMonthChange)}\n        ${renderTd(b.yearlyChange)}\n      </tr>`;\n  });\n  bistHtml += `</tbody></table></div>`;\n}\n\n// Halka Arz Tablosu\nlet ipoHtml = \"\";\nif (ipoItems.length > 0) {\n  ipoHtml = `\n    <div style=\"margin-top: 20px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 15px; font-weight: bold; color: #1e293b; display: block; margin-bottom: 8px; border-bottom: 2px solid #10b981; padding-bottom: 4px;\">🚀 Son 5 Halka Arz Performansı</span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 6px 8px;\">Şirket</th>\n            <th style=\"padding: 6px 8px;\">Son Fiyat</th>\n            <th style=\"padding: 6px 8px;\">Günlük</th>\n            <th style=\"padding: 6px 8px;\">Haftalık</th>\n            <th style=\"padding: 6px 8px;\">Toplam Getiri</th>\n          </tr>\n        </thead>\n        <tbody>`;\n  ipoItems.forEach(i => {\n    ipoHtml += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 6px 8px;\"><b>${i.name}</b> (${i.symbol})</td>\n        <td style=\"padding: 6px 8px;\">₺${i.currentPrice}</td>\n        ${renderTd(i.dailyChange)}\n        ${renderTd(i.weeklyChange)}\n        ${renderTd(i.totalReturn)}\n      </tr>`;\n  });\n  ipoHtml += `</tbody></table></div>`;\n}\n\n// Final HTML\nlet finalHtml = `\n<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"></head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; background-color: #ffffff;\">\n  <div style=\"max-width: 700px; margin: 0 auto; padding: 10px;\">\n    ${aiHtml}\n    ${metalHtml}\n    ${cryptoHtml}\n    ${bistHtml}\n    ${ipoHtml}\n  </div>\n</body>\n</html>`;\n\nconst safeHtml = finalHtml\n  .replace(/ç/g, '&#231;').replace(/Ç/g, '&#199;')\n  .replace(/ğ/g, '&#287;').replace(/Ğ/g, '&#286;')\n  .replace(/ı/g, '&#305;').replace(/İ/g, '&#304;')\n  .replace(/ö/g, '&#246;').replace(/Ö/g, '&#214;')\n  .replace(/ş/g, '&#351;').replace(/Ş/g, '&#350;')\n  .replace(/ü/g, '&#252;').replace(/Ü/g, '&#220;');\n\nreturn [{ json: { html_body: safeHtml } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
-        -96
-      ],
-      "id": "d046ff03-e2bf-418d-a9dd-8d6fc6780086",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "url": "https://query1.finance.yahoo.com/v8/finance/chart/TUPRS.IS?interval=1d&range=1mo",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {}
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        192,
-        -160
-      ],
-      "id": "f5cddb31-2751-43f7-a5cf-1a951aa64f6e",
-      "name": "TUPRS"
-    },
-    {
-      "parameters": {
-        "url": "https://query1.finance.yahoo.com/v8/finance/chart/ASELS.IS?interval=1d&range=1mo",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        192,
-        -32
-      ],
-      "id": "9d5d0b2d-e9c4-4968-95d5-155e1890abcd",
-      "name": "ASELSAN"
-    },
-    {
-      "parameters": {
-        "url": "https://query1.finance.yahoo.com/v8/finance/chart/SAHOL.IS?interval=1d&range=1mo",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        96,
-        -32
-      ],
-      "id": "572c89e4-6c91-4fd8-9a46-c1458624ebef",
-      "name": "SAHOL"
-    },
-    {
-      "parameters": {
-        "url": "https://query1.finance.yahoo.com/v8/finance/chart/AYGAZ.IS?interval=1d&range=1mo",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        96,
-        96
-      ],
-      "id": "65c8a6bb-38d3-481d-b413-288ce70a8d0c",
-      "name": "AYGAZ"
-    },
-    {
-      "parameters": {
-        "url": "https://query1.finance.yahoo.com/v8/finance/chart/KCHOL.IS?interval=1d&range=1mo",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        96,
-        -160
-      ],
-      "id": "800758d0-7f94-412e-a413-dc92be534de5",
-      "name": "KCHOL"
-    },
-    {
-      "parameters": {
-        "numberInputs": 6
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        384,
-        -160
-      ],
-      "id": "7dbd4448-5b2c-41a9-b90f-622929bdd1d9",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.groq.com/openai/v1/chat/completions",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": []
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(\"Sen sadece rakamlara ve teknik analiz kurallarına odaklanan profesyonel bir teknik analistsin.\\n\\nKESİN KURALLAR:\\n1) Kripto paralar hakkında kesinlikle hiçbir yorum yapma, onları tamamen görmezden gel.\\n2) Girişteki 'ai_girdisi' metninde bulunan borsa hisselerinin (KCHOL, TUPRS, SAHOL, ASELSAN, AYGZ vb.) her biri için ayrı birer satırda, bağımsız teknik analiz yorumu yaz.\\n3) Her hisse senedi yorumunun en başına, o varlığın kâr/zarar durumuna göre yeşil (📈 veya 🟢) ya da kırmızı (📉 veya 🔴) bir yön emojisi (logosu) ekleyerek başla.\\n4) Her varlık için analiz sunarken, o varlığın haftalık (7g) ve aylık (30g) net kâr/zarar (artış/azalış) yüzdelerini metin içerisinde mutlaka açıkça belirt (Örn: 'Haftalık %-8.62 kayıpla destek seviyesine...' veya 'Aylık %+16.21 kâr marjıyla direnç bölgesine...' gibi) ve analizi bu somut rakamlara dayandır.\\n5) Her bir hisse senedi için yazacağın yorum kesinlikle en az 15, en fazla 35 kelimeden oluşmalıdır. Sınırı aşma.\\n6) Yorumlarında bu net kâr/zarar oranlarına göre destek ve direnç yakınlığını analiz et (sert düşenler destek/aşırı satım, yükselenler direnç/aşırı alım) ve net aksiyon önerisi sun (akümülasyon veya kar realizasyonu).\\n7) Giriş, selamlama veya kapanış klişeleri asla kullanma. Doğrudan hisse yorumlarıyla başla.\\n8) Yıldızlar (**), Markdown veya HTML etiketleri kesinlikle kullanma. Doğrudan düz metin yaz. Her bir hissenin yorumu bittikten sonra mutlaka bir boş satır bırakarak (çift satır atlayarak) bir sonraki hisseye geç.\\n9) Dilersen Dolar Kuru ve Gram Altın için de aynı kurallarla çok kısa birer teknik satır ekleyebilirsin.\\n\\nAnaliz edilecek veriler:\\n\\n\" + $json.ai_girdisi) }}\n    }\n  ]\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        752,
-        -96
-      ],
-      "id": "616d9b8d-e28f-4703-aef8-92d0fb745084",
-      "name": "Yapay Zeka Analizi",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "F4l32P3DT7hwoM8L",
-          "name": "Header Auth account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// 1. Yapay zekanın ürettiği yorumu alıyoruz\nconst aiMetin = $input.first().json.choices?.[0]?.message?.content || \"\";\n\n// 2. İlk JavaScript düğümünden gelen ana finans tablosunu çekiyoruz\nconst tabloMetin = $('Code in JavaScript').first().json.mail_icerik || \"\";\n\n// 3. YENİ: IPO Hesaplayıcı düğümünden halka arz verilerini çekiyoruz\nlet ipoItems = [];\ntry {\n  ipoItems = $('IPO Hesaplayıcı').all().map(item => item.json);\n} catch (e) {\n  ipoItems = [];\n}\n\n// 4. YENİ: Halka Arzlar için ayrı HTML Tablosu oluşturuyoruz\nlet ipoTabloMetin = \"\";\n\nif (ipoItems.length > 0) {\n  ipoTabloMetin = `\n    <!-- Ayrı Halka Arz Performans Kartı -->\n    <div style=\"margin-top: 25px; background-color: #ffffff; border: 1px solid #e1e8ed; border-radius: 6px; padding: 15px; font-family: Arial, sans-serif;\">\n      <span style=\"font-size: 16px; font-weight: bold; color: #2c3e50; display: block; margin-bottom: 12px; border-bottom: 2px solid #27ae60; padding-bottom: 6px;\">\n        🚀 Son 5 Halka Arz Performansı\n      </span>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;\">\n        <thead>\n          <tr style=\"background-color: #f8fafc; color: #475569;\">\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Şirket</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Son Fiyat</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Günlük</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Haftalık</th>\n            <th style=\"padding: 8px; border-bottom: 1px solid #e2e8f0;\">Toplam Getiri</th>\n          </tr>\n        </thead>\n        <tbody>\n  `;\n\n  ipoItems.forEach(ipo => {\n    const dailyColor = ipo.dailyChange >= 0 ? '#27ae60' : '#e74c3c';\n    const weeklyColor = ipo.weeklyChange >= 0 ? '#27ae60' : '#e74c3c';\n    const totalColor = ipo.totalReturn >= 0 ? '#27ae60' : '#e74c3c';\n\n    const dailySign = ipo.dailyChange > 0 ? '+' : '';\n    const weeklySign = ipo.weeklyChange > 0 ? '+' : '';\n    const totalSign = ipo.totalReturn > 0 ? '+' : '';\n\n    ipoTabloMetin += `\n      <tr style=\"border-bottom: 1px solid #f1f5f9;\">\n        <td style=\"padding: 8px; color: #1e293b;\"><b>${ipo.name}</b> (${ipo.symbol})</td>\n        <td style=\"padding: 8px; color: #1e293b;\">₺${ipo.currentPrice}</td>\n        <td style=\"padding: 8px; color: ${dailyColor}; font-weight: bold;\">%${dailySign}${ipo.dailyChange}</td>\n        <td style=\"padding: 8px; color: ${weeklyColor}; font-weight: bold;\">%${weeklySign}${ipo.weeklyChange}</td>\n        <td style=\"padding: 8px; color: ${totalColor}; font-weight: bold;\">%${totalSign}${ipo.totalReturn}</td>\n      </tr>\n    `;\n  });\n\n  ipoTabloMetin += `\n        </tbody>\n      </table>\n    </div>\n  `;\n}\n\n// 5. Tüm parçaları (AI Raporu + Ana Finans Tablosu + Halka Arz Tablosu) şablonda birleştiriyoruz\nlet finalHtml = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; color: #333; background-color: #ffffff;\">\n\n  <div style=\"max-width: 650px; margin: 0 auto; padding: 10px;\">\n    \n    <!-- Yapay Zeka Yorum Kutusu -->\n    <div style=\"background-color: #f4f9f4; border-left: 4px solid #2ecc71; padding: 15px; margin-bottom: 25px; border-radius: 4px; line-height: 1.6;\">\n      <span style=\"font-size: 18px; font-weight: bold; color: #27ae60; display: block; margin-bottom: 12px;\">🤖 Yapay Zeka Teknik Analiz Raporu</span>\n      <p style=\"margin: 0; font-size: 14px; color: #2c3e50; white-space: pre-line; font-family: Arial, sans-serif; line-height: 1.6;\">\n        ${aiMetin}\n      </p>\n    </div>\n\n    <!-- Ana Finans Tablosu -->\n    ${tabloMetin}\n\n    <!-- Son 5 Halka Arz Tablosu -->\n    ${ipoTabloMetin}\n    \n  </div>\n\n</body>\n</html>\n`;\n\n// 6. Türkçe karakterleri asla bozulmayacak HTML Entity kodlarına dönüştürüyoruz\nconst safeHtml = finalHtml\n  .replace(/ç/g, '&#231;')\n  .replace(/Ç/g, '&#199;')\n  .replace(/ğ/g, '&#287;')\n  .replace(/Ğ/g, '&#286;')\n  .replace(/ı/g, '&#305;')\n  .replace(/İ/g, '&#304;')\n  .replace(/ö/g, '&#246;')\n  .replace(/Ö/g, '&#214;')\n  .replace(/ş/g, '&#351;')\n  .replace(/Ş/g, '&#350;')\n  .replace(/ü/g, '&#252;')\n  .replace(/Ü/g, '&#220;');\n\n// 7. n8n çıktısı\nreturn [{\n  json: {\n    html_body: safeHtml\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1280,
-        48
+        1472,
+        -80
       ],
       "id": "8e575e46-3586-4ad7-96b3-3b23e4211335",
       "name": "Code in JavaScript1",
@@ -225,8 +80,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        96,
-        224
+        -64,
+        176
       ],
       "id": "8324bb39-7885-431d-bd02-3cd31ba5af8f",
       "name": "Halkarz Web Scraping"
@@ -238,8 +93,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        304,
-        224
+        96,
+        128
       ],
       "id": "f6e08ffa-a656-4263-936b-c9f269f9a45c",
       "name": "Halka Arz Kazıyıcı",
@@ -247,14 +102,14 @@
     },
     {
       "parameters": {
-        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $('Halka Arz Kazıyıcı').item.json.symbol }}?interval=1d&range=1mo",
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $('Halka Arz Kazıyıcı').item.json.symbol }}?interval=1d&range=2y&_={{ $now.toUnixInteger() }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        720,
-        224
+        288,
+        240
       ],
       "id": "f71c4edf-859b-40d0-a077-b94a69aacef0",
       "name": "Yahoo Finance IPO Fetch"
@@ -266,26 +121,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        976,
-        224
+        576,
+        240
       ],
       "id": "423fa596-c5f8-4311-a285-72ab872f7f33",
       "name": "IPO Hesaplayıcı"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        1120,
-        48
-      ],
-      "id": "c195684b-93a9-469e-ada3-65ec84e8a776",
-      "name": "Merge1"
     },
     {
       "parameters": {
@@ -295,11 +135,243 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        512,
-        224
+        112,
+        336
       ],
       "id": "7d2c6035-15cd-442f-b226-8f04205ed46e",
       "name": "IPO Detay Fetch"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Takip edilecek güncellenmiş BIST portföyü\nconst bistList = [\n  { symbol: \"KCHOL.IS\", name: \"Koç Holding\" },\n  { symbol: \"ASELS.IS\", name: \"Aselsan\" },\n  { symbol: \"TUPRS.IS\", name: \"Tüpraş\" },\n  { symbol: \"SAHOL.IS\", name: \"Sabancı Holding\" },\n  { symbol: \"FROTO.IS\", name: \"Ford Otosan\" },\n  { symbol: \"PGSUS.IS\", name: \"Pegasus\" },\n  { symbol: \"THYAO.IS\", name: \"Türk Hava Yolları\" },\n  { symbol: \"EREGL.IS\", name: \"Ereğli Demir Çelik\" },\n  { symbol: \"ASTOR.IS\", name: \"Astor Enerji\" }\n];\n\nreturn bistList.map(stock => ({ json: stock }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        48
+      ],
+      "id": "dfd04924-76ae-4208-a4c8-2cbb3bf1f717",
+      "name": "BIST Liste"
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.symbol }}?interval=1d&range=2y&_={{ $now.toUnixInteger() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        48
+      ],
+      "id": "1211fd15-e636-4499-93b1-f3b226c39009",
+      "name": "BIST Yahoo Fetch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nconst items = $input.all();\nconst listItems = $('BIST Liste').all();\n\nconst nameMap = {};\nlistItems.forEach(i => { if (i.json.symbol) nameMap[i.json.symbol] = i.json.name; });\n\nfor (const item of items) {\n  const chartResult = item.json.chart?.result?.[0];\n  if (!chartResult) continue;\n\n  const fullSymbol = chartResult.meta.symbol;\n  const cleanSymbol = fullSymbol.replace('.IS', '');\n  const companyName = nameMap[fullSymbol] || cleanSymbol;\n  \n  const rawQuotes = chartResult.indicators?.quote?.[0]?.close || [];\n  const cleanQuotes = rawQuotes.filter(p => p !== null && p !== undefined);\n  if (cleanQuotes.length === 0) continue;\n\nconst currentPrice = chartResult.meta.regularMarketPrice || cleanQuotes[cleanQuotes.length - 1];\n  const p1d = cleanQuotes.length >= 2 ? cleanQuotes[cleanQuotes.length - 2] : currentPrice;\n  const p5d = cleanQuotes.length >= 6 ? cleanQuotes[cleanQuotes.length - 6] : cleanQuotes[0];\n  const p21d = cleanQuotes.length >= 22 ? cleanQuotes[cleanQuotes.length - 22] : cleanQuotes[0];\n  const p63d = cleanQuotes.length >= 64 ? cleanQuotes[cleanQuotes.length - 64] : cleanQuotes[0];\n  const p252d = cleanQuotes.length >= 253 ? cleanQuotes[cleanQuotes.length - 253] : cleanQuotes[0];\n\n  const getPct = (c, p) => p > 0 ? Number((((c - p) / p) * 100).toFixed(2)) : 0;\n\n  results.push({\n    json: {\n      symbol: cleanSymbol,\n      name: companyName,\n      currentPrice: Number(currentPrice.toFixed(2)),\n      dailyChange: getPct(currentPrice, p1d),\n      weeklyChange: getPct(currentPrice, p5d),\n      monthlyChange: getPct(currentPrice, p21d),\n      threeMonthChange: getPct(currentPrice, p63d),\n      yearlyChange: getPct(currentPrice, p252d)\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        48
+      ],
+      "id": "eb2f089b-7919-4032-a33a-96f95e3a8ad7",
+      "name": "BIST Hesaplayıcı"
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        -96
+      ],
+      "id": "9d93ce6e-a0e1-4001-b75b-81d04e472ff8",
+      "name": "Merge",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cryptoList = [\n  { symbol: \"BTCUSDT\", name: \"Bitcoin (BTC)\" },\n  { symbol: \"ETHUSDT\", name: \"Ethereum (ETH)\" },\n  { symbol: \"SOLUSDT\", name: \"Solana (SOL)\" },\n  { symbol: \"XRPUSDT\", name: \"Ripple (XRP)\" },\n  { symbol: \"MMTUSDT\", name: \"MMT\" },\n  { symbol: \"EIGENUSDT\", name: \"EigenLayer (EIGEN)\" }\n];\n\nreturn cryptoList.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        -224
+      ],
+      "id": "a83eb844-1709-4e28-a126-c8925dc31eb9",
+      "name": "Kripto Liste"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.binance.com/api/v3/klines?symbol={{ $json.symbol }}&interval=1d&limit=370",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        272,
+        -224
+      ],
+      "id": "b7d51341-8de9-4302-90b7-52b4345d861c",
+      "name": "Kripto Binance Fetch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nconst items = $input.all();\nconst cryptoList = $('Kripto Liste').all();\n\nfor (let i = 0; i < cryptoList.length; i++) {\n  const listInfo = cryptoList[i]?.json || {};\n  const originalSymbol = listInfo.symbol || \"\";\n  const name = listInfo.name || originalSymbol;\n\n  let klines = [];\n  try {\n    const rawData = items[i]?.json?.data || items[i]?.json?.body || items[i]?.json;\n    if (typeof rawData === 'string') klines = JSON.parse(rawData);\n    else if (Array.isArray(rawData)) klines = rawData;\n  } catch (e) { klines = []; }\n\n  if (!Array.isArray(klines) || klines.length === 0 || !Array.isArray(klines[0])) continue;\n\n  const currentPrice = parseFloat(klines[klines.length - 1][4] || 0);\n  const price1d = parseFloat(klines[Math.max(0, klines.length - 2)][4] || currentPrice);\n  const price7d = parseFloat(klines[Math.max(0, klines.length - 8)][4] || currentPrice);\n  const price30d = parseFloat(klines[Math.max(0, klines.length - 31)][4] || currentPrice);\n  const price90d = parseFloat(klines[Math.max(0, klines.length - 91)][4] || currentPrice);\n  const price365d = parseFloat(klines[0][4] || currentPrice);\n\n  const getPct = (c, p) => p > 0 ? Number((((c - p) / p) * 100).toFixed(2)) : 0;\n  const formattedPrice = currentPrice >= 1 ? currentPrice.toFixed(2) : currentPrice.toFixed(4);\n\n  results.push({\n    json: {\n      symbol: originalSymbol.replace('USDT', ''),\n      name: name,\n      priceUsd: Number(formattedPrice),\n      dailyChange: getPct(currentPrice, price1d),\n      weeklyChange: getPct(currentPrice, price7d),\n      monthlyChange: getPct(currentPrice, price30d),\n      threeMonthChange: getPct(currentPrice, price90d),\n      yearlyChange: getPct(currentPrice, price365d)\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -224
+      ],
+      "id": "b3e35ea5-23ae-4ca3-b3af-caccb11904bc",
+      "name": "Kripto Hesaplayıcı",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const metalList = [\n  { symbol: \"GC=F\", name: \"Ons Altın ($)\" },\n  { symbol: \"SI=F\", name: \"Ons Gümüş ($)\" },\n  { symbol: \"USDTRY=X\", name: \"Dolar/TL\" }\n];\n\nreturn metalList.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        -80
+      ],
+      "id": "e6c5bbf8-40f0-4fb8-92cd-c30185c84734",
+      "name": "Değerli Maden Liste"
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.symbol }}?interval=1d&range=2y&_={{ $now.toUnixInteger() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        272,
+        -80
+      ],
+      "id": "5f002683-20d4-4fa9-a3d7-af43cf56fffc",
+      "name": "Maden Yahoo Fetch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet dataStore = {};\n\nfor (const item of items) {\n  const chart = item.json.chart?.result?.[0];\n  if (!chart) continue;\n\n  const symbol = chart.meta.symbol;\n  const quotes = (chart.indicators?.quote?.[0]?.close || []).filter(p => p !== null && p !== undefined);\n  if (quotes.length === 0) continue;\n\n  const curr = chart.meta.regularMarketPrice || quotes[quotes.length - 1];\n  const p1d = quotes.length >= 2 ? quotes[quotes.length - 2] : curr;\n  const p5d = quotes.length >= 6 ? quotes[quotes.length - 6] : quotes[0];\n  const p21d = quotes.length >= 22 ? quotes[quotes.length - 22] : quotes[0];\n  const p63d = quotes.length >= 64 ? quotes[quotes.length - 64] : quotes[0];\n  const p252d = quotes.length >= 253 ? quotes[quotes.length - 253] : quotes[0];\n\n  dataStore[symbol] = { curr, p1d, p5d, p21d, p63d, p252d };\n}\n\nconst gold = dataStore[\"GC=F\"] || {};\nconst silver = dataStore[\"SI=F\"] || {};\nconst usd = dataStore[\"USDTRY=X\"] || {};\n\nconst ONS_GRAM = 31.1034768;\n\nconst calcGram = (metal, rate) => (metal / ONS_GRAM) * rate;\n\nconst gGoldCurr = calcGram(gold.curr || 0, usd.curr || 0);\nconst gGold1d = calcGram(gold.p1d || 0, usd.p1d || 0);\nconst gGold5d = calcGram(gold.p5d || 0, usd.p5d || 0);\nconst gGold21d = calcGram(gold.p21d || 0, usd.p21d || 0);\nconst gGold63d = calcGram(gold.p63d || 0, usd.p63d || 0);\nconst gGold252d = calcGram(gold.p252d || 0, usd.p252d || 0);\n\nconst gSilverCurr = calcGram(silver.curr || 0, usd.curr || 0);\nconst gSilver1d = calcGram(silver.p1d || 0, usd.p1d || 0);\nconst gSilver5d = calcGram(silver.p5d || 0, usd.p5d || 0);\nconst gSilver21d = calcGram(silver.p21d || 0, usd.p21d || 0);\nconst gSilver63d = calcGram(silver.p63d || 0, usd.p63d || 0);\nconst gSilver252d = calcGram(silver.p252d || 0, usd.p252d || 0);\n\nconst getPct = (c, p) => p > 0 ? Number((((c - p) / p) * 100).toFixed(2)) : 0;\n\nconst metals = [\n  {\n    name: \"Ons Altın ($)\", price: `$${(gold.curr||0).toFixed(2)}`,\n    dailyChange: getPct(gold.curr, gold.p1d), weeklyChange: getPct(gold.curr, gold.p5d),\n    monthlyChange: getPct(gold.curr, gold.p21d), threeMonthChange: getPct(gold.curr, gold.p63d),\n    yearlyChange: getPct(gold.curr, gold.p252d)\n  },\n  {\n    name: \"Ons Gümüş ($)\", price: `$${(silver.curr||0).toFixed(2)}`,\n    dailyChange: getPct(silver.curr, silver.p1d), weeklyChange: getPct(silver.curr, silver.p5d),\n    monthlyChange: getPct(silver.curr, silver.p21d), threeMonthChange: getPct(silver.curr, silver.p63d),\n    yearlyChange: getPct(silver.curr, silver.p252d)\n  },\n  {\n    name: \"Gram Altın (TL)\", price: `₺${gGoldCurr.toFixed(2)}`,\n    dailyChange: getPct(gGoldCurr, gGold1d), weeklyChange: getPct(gGoldCurr, gGold5d),\n    monthlyChange: getPct(gGoldCurr, gGold21d), threeMonthChange: getPct(gGoldCurr, gGold63d),\n    yearlyChange: getPct(gGoldCurr, gGold252d)\n  },\n  {\n    name: \"Gram Gümüş (TL)\", price: `₺${gSilverCurr.toFixed(2)}`,\n    dailyChange: getPct(gSilverCurr, gSilver1d), weeklyChange: getPct(gSilverCurr, gSilver5d),\n    monthlyChange: getPct(gSilverCurr, gSilver21d), threeMonthChange: getPct(gSilverCurr, gSilver63d),\n    yearlyChange: getPct(gSilverCurr, gSilver252d)\n  },\n  {\n    name: \"Dolar / TL\", price: `₺${(usd.curr||0).toFixed(2)}`,\n    dailyChange: getPct(usd.curr, usd.p1d), weeklyChange: getPct(usd.curr, usd.p5d),\n    monthlyChange: getPct(usd.curr, usd.p21d), threeMonthChange: getPct(usd.curr, usd.p63d),\n    yearlyChange: getPct(usd.curr, usd.p252d)\n  }\n];\n\nreturn [{ json: { metals: metals } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -80
+      ],
+      "id": "c5276abf-e932-4dad-803b-889a619eee13",
+      "name": "Maden Hesaplayıcı"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Sayısal Fiyat Verilerini Çekiyoruz\nlet bist = [], crypto = [], metals = [], ipo = [];\n\ntry { bist = $('BIST Hesaplayıcı').all().map(i => i.json); } catch(e){}\ntry { crypto = $('Kripto Hesaplayıcı').all().map(i => i.json); } catch(e){}\ntry { metals = $('Maden Hesaplayıcı').first()?.json?.metals || []; } catch(e){}\ntry { ipo = $('IPO Hesaplayıcı').all().map(i => i.json); } catch(e){}\n\n// 2. Anlık Piyasa ve Finans Haberlerini Çekiyoruz\nlet newsHeadlines = [];\ntry {\n  newsHeadlines = $('Gündem Haberleri').all().map(i => {\n    return `- ${i.json.title} (${i.json.pubDate || ''})`;\n  });\n} catch(e) {\n  newsHeadlines = [\"Gündem haberleri şu an alınamadı.\"];\n}\n\n// 3. Yapay Zekaya Gönderilecek Derinlikli Metin\nconst promptText = `\n### 📊 1. ANLIK FİYAT VE TARİHSEL DEĞİŞİM VERİLERİ (TEKNİK VERİ)\n\nA. DEĞERLİ MADENLER VE DÖVİZ:\n${JSON.stringify(metals, null, 2)}\n\nB. KRİPTO PARA PİYASASI:\n${JSON.stringify(crypto, null, 2)}\n\nC. BİST PORTFÖYÜ:\n${JSON.stringify(bist, null, 2)}\n\nD. SON HALKA ARZLAR:\n${JSON.stringify(ipo, null, 2)}\n\n---\n\n### 📰 2. GÜNDEMDEKİ SON FİNANS VE PİYASA HABERLERİ (TEMEL VERİ)\n${newsHeadlines.join('\\n')}\n`;\n\nreturn [{ json: { formatted_data: promptText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        -96
+      ],
+      "id": "22105a5a-7caa-4bfa-8a36-82949dd19109",
+      "name": "AI Prompt Hazırlayıcı"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer gsk_YOUR_GROQ_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"model\": \"llama-3.3-70b-versatile\",\n    \"messages\": [\n      {\n        \"role\": \"system\",\n        \"content\": \"Sen kıdemli bir Portföy Yöneticisi ve Nicel Piyasa Stratejistisin. Görevin sana verilen ham verideki TÜM VARLIKLARI (BİST Hisseleri, Kripto Paralar, Değerli Madenler/Döviz ve Halka Arzlar) TEK BİR TANESİNİ DAHİ ATLAMADAN ve 'vb.' DİYEREK ÖZETLEMEDEN raporda işlemektir.\\n\\nSTRICT KURAL (ÇOK KRİTİK):\\n1. Gelen veri paketindeki HER BİR VARLIK (Örn: THYAO, ASELS, KCHOL, TUPRS, BTC, ETH, XRP, MMT, EIGEN, Gram Altın, Gümüş, Dolar, SARAE, ISVEA...) tabloda KESİNLİKLE ayrı bir satır olarak yer alacaktır.\\n2. Bir varlığı bile tablonun dışında bırakmak HATA kabul edilir.\\n3. Tabloyu cep telefonu ekranında sağa/sola kaymaması için KESİNLİKLE <pre>...</pre> etiketleri içine al.\\n4. Fiyat hareketlerini gündemdeki haberlerle ilişkilendirerek hibrit analiz yap.\\n\\nÇIKTI FORMATI:\\n\\n🧠 <b>UZMAN STRATEJİST PİYASA & PORTFÖY TAM RAPORU</b>\\n─────────────────────────\\n\\n📰 <b>PİYASAYI SÜRÜKLEYEN ANA GÜNDEM & HABER ÖZETİ</b>\\n• <b>Makro Piyasalar & Haberler:</b> [Sıcak gündem haberlerinin piyasa duyarlılığına etkisi]\\n\\n📊 <b>TAM KAPSAMLI ÇOKLU ZAMAN DİLİMİ TABLOSU</b>\\n<pre>\\nVarlık   | Fiyat   | 1G %  | 1A %  | 1Y %  | Durum / Sinyal\\n---------+---------+-------+-------+-------+-----------------------\\n[BURAYA GELEN TÜM VARLIKLAR EKSİKSİZ SATIR SATIR YAZILACAK]\\n</pre>\\n\\n🎯 <b>KATEGORİ BAZLI DERİN ANALİZ (HİSSELER & VARLIKLAR)</b>\\n• <b>BİST Portföy Hisseleri:</b> [Gelen BİST hisselerinin tek tek bilanço, çarpan ve haber analizi]\\n• <b>Kripto Varlıklar:</b> [Tüm kripto coinlerin teknik destek/direnç ve trend yorumları]\\n• <b>Madenler & Döviz:</b> [Altın, gümüş ve döviz kurlarının makro yorumu]\\n• <b>Halka Arzlar:</b> [Tavan serileri ve kilit açılış durumları]\\n\\n⚠️ <b>AŞIRI SATIM & DEĞER TUZAĞI (VALUE TRAP) UYARILARI</b>\\n[Hangi hisse/varlık haber desteği olmadan yükseldi (Tavşan Sıçraması), hangisi dip alım fırsatıdır belirt]\\n\\n🔮 <b>YARINKİ PİYASA & AKIŞ TAHMİNİ</b>\\n<b>Beklenen Yön:</b> 🟢 ARTACAK / 🔴 DÜŞECEK / 🟡 YATAY\\n<b>Gerekçe:</b> [Gündem haberleri ve tüm veri setinin genel sentezi]\"\n      },\n      {\n        \"role\": \"user\",\n        \"content\": $json.formatted_data\n      }\n    ],\n    \"temperature\": 0.1,\n    \"max_tokens\": 4000\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1200,
+        -96
+      ],
+      "id": "3e1709d9-1399-4154-865f-98849424e5c8",
+      "name": "Yapay Zeka Analizi"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=Borsa+Istanbul+OR+BIST100+OR+Kripto+OR+Altin+OR+Merkez+Bankasi&hl=tr&gl=TR&ceid=TR:tr",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        448
+      ],
+      "id": "84737575-0909-4443-91cf-2d1ca7086ae7",
+      "name": "Gündem Haberleri"
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        576,
+        448
+      ],
+      "id": "b53a343a-3971-4349-96aa-ed549d5bc71a",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "chatId": "6617627570",
+        "text": "={{ $('Yapay Zeka Analizi').first().json.choices[0].message.content }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        160
+      ],
+      "id": "b8e65794-1ef1-4602-9b5b-c97ac258c977",
+      "name": "Send a text message",
+      "webhookId": "70ea114c-6d13-4d54-bf58-cce74f35b172",
+      "credentials": {
+        "telegramApi": {
+          "id": "2nA1ZFs4luEKWlWX",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -308,136 +380,27 @@
       "main": [
         [
           {
-            "node": "Kripto Verileri",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "ASELSAN",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "TUPRS",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "SAHOL",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "AYGAZ",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "KCHOL",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Halkarz Web Scraping",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Kripto Verileri": {
-      "main": [
-        [
+          },
           {
-            "node": "Merge",
+            "node": "BIST Liste",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
+          },
           {
-            "node": "Yapay Zeka Analizi",
+            "node": "Kripto Liste",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "KCHOL": {
-      "main": [
-        [
+          },
           {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "TUPRS": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 2
-          }
-        ]
-      ]
-    },
-    "SAHOL": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 3
-          }
-        ]
-      ]
-    },
-    "ASELSAN": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 4
-          }
-        ]
-      ]
-    },
-    "AYGAZ": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 5
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
+            "node": "Değerli Maden Liste",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Yapay Zeka Analizi": {
-      "main": [
-        [
+          },
           {
-            "node": "Merge1",
+            "node": "Gündem Haberleri",
             "type": "main",
             "index": 0
           }
@@ -449,6 +412,11 @@
         [
           {
             "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -492,20 +460,9 @@
       "main": [
         [
           {
-            "node": "Merge1",
+            "node": "Merge",
             "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
+            "index": 3
           }
         ]
       ]
@@ -520,6 +477,154 @@
           }
         ]
       ]
+    },
+    "BIST Liste": {
+      "main": [
+        [
+          {
+            "node": "BIST Yahoo Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BIST Yahoo Fetch": {
+      "main": [
+        [
+          {
+            "node": "BIST Hesaplayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Prompt Hazırlayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kripto Liste": {
+      "main": [
+        [
+          {
+            "node": "Kripto Binance Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kripto Binance Fetch": {
+      "main": [
+        [
+          {
+            "node": "Kripto Hesaplayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Değerli Maden Liste": {
+      "main": [
+        [
+          {
+            "node": "Maden Yahoo Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maden Yahoo Fetch": {
+      "main": [
+        [
+          {
+            "node": "Maden Hesaplayıcı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BIST Hesaplayıcı": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Maden Hesaplayıcı": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Kripto Hesaplayıcı": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Prompt Hazırlayıcı": {
+      "main": [
+        [
+          {
+            "node": "Yapay Zeka Analizi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yapay Zeka Analizi": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gündem Haberleri": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        []
+      ]
     }
   },
   "active": true,
@@ -530,7 +635,7 @@
     "timeSavedMode": "fixed",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "739aa611-3cd5-4429-9d1f-b69ee7436fb3",
+  "versionId": "bfb381a9-b6cf-404d-bade-b58372af17cd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a19f6f4a2cbad2d63a3335d6926812c476751f5c468d7fe70110ec6e7c10b986"
