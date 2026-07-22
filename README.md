@@ -1,11 +1,10 @@
 # 📈 FinAnalyst-n8n: Otomatik Finansal Piyasalar & Portföy Raporlama Sistemi
 
-<img width="1920" height="1007" alt="borsatakip2" src="https://github.com/user-attachments/assets/7ed39d1c-4f1d-493a-ab3c-d0ec328b8880" /> 
-<img width="1738" height="922" alt="borsatakip" src="https://github.com/user-attachments/assets/4834708a-ff09-4d70-a7d4-b3f2e0e53a9c" />
 
-![n8n](https://img.shields.io/badge/n8n-Workflow_Automation-FF6D5A?style=for-the-badge&logo=n8n&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
+
+<img width="1913" height="966" alt="borsatakip2" src="https://github.com/user-attachments/assets/183bc851-a1a2-4e8a-81c6-12b54f44173f" />
+<img width="1920" height="963" alt="borsatakip" src="https://github.com/user-attachments/assets/811d39db-c171-48df-8899-9eb3f7ab961d" />
+
 
 **FinAnalyst-n8n**, Borsa İstanbul (BIST), Kripto Para Piyasaları, Değerli Madenler / Döviz ve Son Halka Arzların (IPO) anlık ve geçmiş verilerini modüler olarak toplayan, analiz eden ve günlük olarak tek bir senkronize e-posta bülteni halinde sunan **n8n tabanlı otomatik bir finansal istihbarat iş akışıdır (workflow)**.
 
