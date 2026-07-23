@@ -1,0 +1,111 @@
+{
+  "name": "Veri Madencisi",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1d034d3e-a640-40f5-9b2b-4000c8cafa08",
+      "name": "Telegram Trigger",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "568ea6d5-b0c4-4ccc-9873-f3522a777988",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text || $json.message.caption || 'bekleniyor' }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Sen üst düzey bir finansal veri analisti ve veri yapılandırma asistanısın. Görevin, sana verilen Telegram mesajlarını analiz edip, otomatik sistemlerin okuyabileceği detaylı ve yapılandırılmış bir veri seti (JSON) oluşturmaktır.  EĞER mesaj sıradan bir sohbet, günaydın mesajı, reklam veya genel bir haber İSE, sadece şu JSON çıktısını ver: {\"durum\": \"GURULTU\"}  EĞER mesaj bir hisse senedi, kripto para veya makroekonomi analizi, al-sat sinyali veya piyasa öngörüsü İSE, metni derinlemesine incele ve AŞAĞIDAKİ JSON formatında kapsamlı bir analiz çıkar:  {   \"durum\": \"ANALIZ\",   \"varlik\": \"Hisse/Sembol adı (örn: THYAO) - Eğer birden fazlaysa virgülle ayır\",   \"sinyal_yonu\": \"AL, SAT, TUT veya Nötr\",   \"giris_seviyesi\": \"Bahsedilen alım/satım fiyat aralığı (yoksa null)\",   \"hedefler\": [\"Hedef 1\", \"Hedef 2\"],   \"stop_loss\": \"Zarar kesme seviyesi (yoksa null)\",   \"vade\": \"Kısa, Orta veya Uzun vade (metinden çıkar, yoksa null)\",   \"temel_gerekce\": \"Analistin bu beklentiye girme sebebi (örn: 'Bilanço beklentisi', 'Direnç kırılımı' - 1-2 cümleyle özetle)\",   \"risk_faktoru\": \"Metinde bahsedilen bir tehlike veya risk varsa buraya yaz (yoksa null)\",   \"genel_duygu\": \"Pozitif, Negatif veya Temkinli\" }  Çıktın SADECE geçerli bir JSON olmalıdır. Markdown, kod bloğu (```json vb.) veya fazladan hiçbir sohbet kelimesi kullanma. Sadece doğrudan süslü parantezlerle başlayan JSON verisini ver."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        256,
+        -160
+      ],
+      "id": "c36b0207-6e01-45f0-b1eb-8e9238401c48",
+      "name": "Basic LLM Chain"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1aa6996d-b004-477f-ae3a-6f532417d419",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "nodeGroups": [],
+  "id": "3vTlFml4A20suaM3",
+  "tags": []
+}
