@@ -4,6 +4,17 @@
 
 <img width="1913" height="966" alt="borsatakip2" src="https://github.com/user-attachments/assets/183bc851-a1a2-4e8a-81c6-12b54f44173f" />
 
+<img width="1920" height="1007" alt="veri madencisi" src="https://github.com/user-attachments/assets/f40e0264-e6d5-4e6e-825e-2ca9617e5dee" />
+
+--YAPAY ZEKA BOTU ANALİZ RAPORU--
+<img width="1457" height="835" alt="analiz" src="https://github.com/user-attachments/assets/68390dba-92e8-459b-9164-1637726fae6c" />
+
+--GÜNLÜK FİNANS GELİŞMELERİ HER SABAH 10.15'DE TELEGRAM YOLUYLA YORUMLANARAK MESAJ BİLDİRİYOR--
+<img width="1545" height="935" alt="fin1" src="https://github.com/user-attachments/assets/2682b95a-70a5-420c-9148-a0bcd0bfb260" />
+<img width="1555" height="943" alt="fin2" src="https://github.com/user-attachments/assets/4c6967c3-6a03-403e-bb80-f41c1b7b222b" />
+
+
+
 **FinAnalyst-n8n**, Borsa İstanbul (BIST), Kripto Para Piyasaları, Değerli Madenler / Döviz ve Son Halka Arzların (IPO) anlık ve geçmiş verilerini modüler olarak toplayan, analiz eden **günlük otomatik e-posta bülteni** ile Telegram üzerinden anlık nicel teknik analiz raporları üreten **interaktif bot motorunu** tek bir çatıda birleştiren **n8n tabanlı gelişmiş finansal istihbarat ve analiz ekosistemidir**.
 
 ---
