@@ -19,7 +19,7 @@
       "webhookId": "YOUR_WEBHOOK_ID",
       "credentials": {
         "telegramApi": {
-          "id": "YOUR_CREDENTIAL_ID",
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
           "name": "Telegram account"
         }
       }
@@ -32,14 +32,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        624,
-        0
+        416,
+        48
       ],
       "id": "568ea6d5-b0c4-4ccc-9873-f3522a777988",
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "YOUR_CREDENTIAL_ID",
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
           "name": "Groq account"
         }
       }
@@ -51,7 +51,7 @@
         "messages": {
           "messageValues": [
             {
-              "message": "Sen üst düzey bir finansal veri analisti ve veri yapılandırma asistanısın. Görevin, sana verilen Telegram mesajlarını analiz edip, otomatik sistemlerin okuyabileceği detaylı ve yapılandırılmış bir veri seti (JSON) oluşturmaktır.  EĞER mesaj sıradan bir sohbet, günaydın mesajı, reklam veya genel bir haber İSE, sadece şu JSON çıktısını ver: {\"durum\": \"GURULTU\"}  EĞER mesaj bir hisse senedi, kripto para veya makroekonomi analizi, al-sat sinyali veya piyasa öngörüsü İSE, metni derinlemesine incele ve AŞAĞIDAKİ JSON formatında kapsamlı bir analiz çıkar:  {   \"durum\": \"ANALIZ\",   \"varlik\": \"Hisse/Sembol adı (örn: THYAO) - Eğer birden fazlaysa virgülle ayır\",   \"sinyal_yonu\": \"AL, SAT, TUT veya Nötr\",   \"giris_seviyesi\": \"Bahsedilen alım/satım fiyat aralığı (yoksa null)\",   \"hedefler\": [\"Hedef 1\", \"Hedef 2\"],   \"stop_loss\": \"Zarar kesme seviyesi (yoksa null)\",   \"vade\": \"Kısa, Orta veya Uzun vade (metinden çıkar, yoksa null)\",   \"temel_gerekce\": \"Analistin bu beklentiye girme sebebi (örn: 'Bilanço beklentisi', 'Direnç kırılımı' - 1-2 cümleyle özetle)\",   \"risk_faktoru\": \"Metinde bahsedilen bir tehlike veya risk varsa buraya yaz (yoksa null)\",   \"genel_duygu\": \"Pozitif, Negatif veya Temkinli\" }  Çıktın SADECE geçerli bir JSON olmalıdır. Markdown, kod bloğu (```json vb.) veya fazladan hiçbir sohbet kelimesi kullanma. Sadece doğrudan süslü parantezlerle başlayan JSON verisini ver."
+              "message": "Sen Wall Street seviyesinde bir Kantitatif Veri Analisti ve Algoritmik NLP Motorusun. İnsan gibi sohbet edemezsin, onay veya selamlama cümleleri kuramazsın. Görevin, gelen Telegram metnini analiz edip SADECE VE SADECE JSON formatında çıktı vermektir.  KESİN KURALLAR VE PİYASA MANTIĞI:  1. HİSSE/COIN KISALTMASI KURALI (ÖNEMLİ):    - Eğer mesajın içinde BIST hisse kodları (örn: THYAO, ASELS, YKBNK) veya Kripto para kısaltmaları (örn: BTC, ETH, EIGEN) net bir şekilde geçiyorsa, bu mesajda o varlıkla ilgili bir gelişme, beklenti veya durum bildirimi vardır. Bu mesajları KESİNLİKLE \"ANALIZ\" olarak işaretle ve çıkarabildiğin tüm veriyi JSON'ا aktar.  2. GÜRÜLTÜ VS. SİNYAL AYRIMI:    - İçinde HİÇBİR varlık, hisse kısaltması, coin, endeks veya borsa geçmeyen sıradan makro haberleri (faiz kararı, tarım dışı istihdam vb.) veya tamamen alakasız günlük sohbetleri \"GURULTU\" olarak işaretle. Çıktı: {\"durum\": \"GURULTU\"}    - \"Borsa\", \"Endeks\", \"Piyasa\" gibi genel kavramlar geçiyor ve bir yön tahmini (örn: \"gidecektir\", \"yükselecek\", \"düşecek\") içeriyorsa bu da KESİNLİKLE bir ANALİZ'dir.  3. VERİ ÇIKARIMI VE HALÜSİNASYON YASAĞI:    - Metinde açıkça bir giriş fiyatı, hedef veya stop seviyesi rakamsal olarak belirtilmemişse KESİNLİKLE rakam uydurma. Bu alanlara null ata.    - Hedefler \"Direnç hattı\", \"Eski zirvesi\" gibi metinsel olabilir. Rakam yoksa bu metinleri kullan.  ÇIKTI FORMATI (Sadece bu JSON objesini ver): {   \"durum\": \"ANALIZ\",   \"varlik\": \"Sembol, Borsa veya Endeks (örn: YKBNK, BTC, Borsa)\",   \"sinyal_yonu\": \"AL, SAT, TUT, NOTR (Metinden çıkar)\",   \"giris_seviyesi\": \"Rakam veya bölge (yoksa null)\",   \"hedefler\": \"Rakam veya metin (yoksa null)\",   \"stop_loss\": \"Rakam veya metin (yoksa null)\",   \"vade\": \"Kısa, Orta, Uzun (yoksa null)\",   \"temel_gerekce\": \"Analistin yorumu, beklentisi veya gelişmenin özeti\",   \"genel_duygu\": \"Pozitif, Negatif veya Temkinli\" }  AŞAĞIDAKİ ÖRNEKLERİ KESİN REFERANS AL:  ÖRNEK GİRDİ 1: \"YKBNK KENDİ ÇİZİM PROGRAMIM ÇİZDİ HARİKA ŞUANDA DESTEKTE GÖRÜNMEKTE VE DİRENÇ HATTINA KADAR POTANSİYELİ VAR\" ÖRNEK ÇIKTI 1: {   \"durum\": \"ANALIZ\",   \"varlik\": \"YKBNK\",   \"sinyal_yonu\": \"AL\",   \"giris_seviyesi\": null,   \"hedefler\": \"Direnç hattı\",   \"stop_loss\": null,   \"vade\": \"Kısa\",   \"temel_gerekce\": \"Hissenin destekte olması ve direnç hattına potansiyeli bulunması\",   \"genel_duygu\": \"Pozitif\" }  ÖRNEK GİRDİ 2: \"Ben piyasanın pozitif devam edeceğini düşünüyorum. Tek geride kalan borsamız o da gidecektir.\" ÖRNEK ÇIKTI 2: {   \"durum\": \"ANALIZ\",   \"varlik\": \"Borsa/Endeks\",   \"sinyal_yonu\": \"AL\",   \"giris_seviyesi\": null,   \"hedefler\": null,   \"stop_loss\": null,   \"vade\": \"Orta/Uzun\",   \"temel_gerekce\": \"Piyasanın genel pozitifliği içinde borsanın geride kalması ve yükseliş beklentisi\",   \"genel_duygu\": \"Pozitif\" }  ÖRNEK GİRDİ 3: \"Türkiye Cumhuriyet Merkez Bankası faizi %37 olarak açıkladı. Beklenti %37,00\" ÖRNEK ÇIKTI 3: {\"durum\": \"GURULTU\"}"
             }
           ]
         },
@@ -65,6 +65,219 @@
       ],
       "id": "c36b0207-6e01-45f0-b1eb-8e9238401c48",
       "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_MAIN_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "AI_Borsa_Sinyalleri",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_MAIN_SPREADSHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_MAIN_SPREADSHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tarih": "={{ $now.setZone('Europe/Istanbul').toFormat('dd.MM.yyyy HH:mm') }}",
+            "Varlik": "={{ JSON.parse($json.text).varlik }}",
+            "Sinyal_Yonu": "={{ JSON.parse($json.text).sinyal_yonu }}",
+            "Genel_Duygu": "={{ JSON.parse($json.text).genel_duygu }}",
+            "Hedefler_ve_Stop": "=Hedef: {{ JSON.parse($json.text).hedefler || '-' }} | Stop: {{ JSON.parse($json.text).stop_loss || '-' }}",
+            "Temel_Gerekce": "={{ JSON.parse($json.text).temel_gerekce }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tarih",
+              "displayName": "Tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Varlik",
+              "displayName": "Varlik",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sinyal_Yonu",
+              "displayName": "Sinyal_Yonu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Genel_Duygu",
+              "displayName": "Genel_Duygu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hedefler_ve_Stop",
+              "displayName": "Hedefler_ve_Stop",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temel_Gerekce",
+              "displayName": "Temel_Gerekce",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        -256
+      ],
+      "id": "6a9eaac1-45b9-498a-b95f-c6e1e4fa9141",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "72ca3e17-665c-4615-a6ac-b22c142172ef",
+              "leftValue": "={{ JSON.parse($json.text).durum }}",
+              "rightValue": "ANAL",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "e0a934bc-2868-41f0-9047-b418b54bac62",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_LOG_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Loglar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_LOG_SPREADSHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_LOG_SPREADSHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tarih": "={{ $now.setZone('Europe/Istanbul').toFormat('dd.MM.yyyy HH:mm') }}",
+            "Durum": "GÜRÜLTÜ / FİLTRELENDİ",
+            "Ham_Mesaj": "={{ $('Telegram Trigger').item.json.message.text || $('Telegram Trigger').item.json.message.caption }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tarih",
+              "displayName": "Tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Durum",
+              "displayName": "Durum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ham_Mesaj",
+              "displayName": "Ham_Mesaj",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        64
+      ],
+      "id": "1e31fba3-78be-4122-8798-d4d44ab08b77",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -90,6 +303,35 @@
           }
         ]
       ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -100,7 +342,7 @@
     "timeSavedMode": "fixed",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "1aa6996d-b004-477f-ae3a-6f532417d419",
+  "versionId": "14a1718a-e29a-4ef9-ab7b-795fed1faa1f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "YOUR_INSTANCE_ID"
