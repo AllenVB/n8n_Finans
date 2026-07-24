@@ -1,4 +1,5 @@
-🚀🚀🚀--FİNANSÖR--🚀🚀🚀
+🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀--FİNANSÖR--🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+
 Bu yapı günlük olarak piyasalarda takip ettiğim varlıkları her sabah bana güncel değişimlerini iletiyor.
 <img width="1920" height="1006" alt="Finansör" src="https://github.com/user-attachments/assets/aea993a7-9db4-4dcc-8d2a-f2d401e49705" />
 --GÜNLÜK FİNANS GELİŞMELERİ HER SABAH 10.15'DE YAPAY ZEKA YOLUYLA YORUMLANARAK MESAJ BİLDİRİYOR--
