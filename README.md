@@ -23,6 +23,17 @@ Veriler tablolanarak kayıt ediliyor.
 <img width="1920" height="997" alt="sheets2" src="https://github.com/user-attachments/assets/b53a10e3-aaa7-47f8-ba25-9e409a848186" />
 <img width="1920" height="972" alt="sheets1" src="https://github.com/user-attachments/assets/9ccd7494-f166-4171-82a4-d046616f15e4" />
 
+🎯🎯🎯🎯YATIRIM TAVSİYE SİSTEMİ🎯🎯🎯🎯
+
+Veriler sosyal medyadaki önemli borsa yatırımcıları tarafından edilen analizler sonucunda toplanıyor.Videolar mp4 halinden text'e dönüştürülüp , tavsiyelerin sonuçları kaydediliyor.
+<img width="1920" height="1001" alt="Apify-Scraping" src="https://github.com/user-attachments/assets/e093dab6-04a6-455a-8bc1-de43c10cd653" />
+Ardından toplanan veriler en küçük yapıya kadar işleniyor. (İsim , Şu Anki Fiyat , Hedef Fiyat , Stop , Yorum) şeklinde.
+<img width="1920" height="967" alt="ekoanaliz" src="https://github.com/user-attachments/assets/e4ce57b5-7bd2-496d-8847-2a87953caa7a" />
+En sade hali ile her sabah maile yatırım tavsiyeleri iletiliyor.
+<img width="1650" height="798" alt="mailrapor" src="https://github.com/user-attachments/assets/ac0f2565-7eac-4a27-bb03-6ad26d90654e" />
+
+
+
 
 **FinAnalyst-n8n**, Borsa İstanbul (BIST), Kripto Para Piyasaları, Değerli Madenler / Döviz ve Son Halka Arzların (IPO) anlık ve geçmiş verilerini modüler olarak toplayan, analiz eden **günlük otomatik e-posta bülteni**, Telegram üzerinden anlık nicel teknik analiz raporları üreten **interaktif bot motoru** ve Telegram kanallarından gelen ham akışları yapay zeka ile filtreleyerek yapılandıran **Veri Madencisi (Data Miner)** modüllerini tek bir çatıda birleştiren **n8n tabanlı gelişmiş finansal istihbarat ve analiz ekosistemidir**.
 
