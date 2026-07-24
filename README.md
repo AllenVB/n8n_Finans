@@ -1,25 +1,28 @@
 # 📈 FinAnalyst-n8n: Otomatik Finansal Piyasalar & İnteraktif AI Portföy Analiz Motoru
 
 --FİNANSÖR--
+Bu yapı günlük olarak piyasalarda takip ettiğim varlıkları her sabah bana güncel değişimlerini iletiyor.
 <img width="1920" height="1006" alt="Finansör" src="https://github.com/user-attachments/assets/aea993a7-9db4-4dcc-8d2a-f2d401e49705" />
+--GÜNLÜK FİNANS GELİŞMELERİ HER SABAH 10.15'DE YAPAY ZEKA YOLUYLA YORUMLANARAK MESAJ BİLDİRİYOR--
+<img width="1690" height="840" alt="mail1" src="https://github.com/user-attachments/assets/b717416e-088a-4f49-9dfb-54651996f53c" />
+<img width="1701" height="899" alt="mail2" src="https://github.com/user-attachments/assets/8ba4db65-7eb7-4e09-a150-443fba2cc259" />
 
---TELEGRAM KOMUT ROBOTU--
-<img width="1920" height="999" alt="telegram komut" src="https://github.com/user-attachments/assets/61ff1c07-a789-484f-8c31-e4fdab54d9a6" />
+<------------------------------------------------------------------------------------------------------------------------->
 
 --VERİ MADENCİSİ--
+Bu robot telegram kanalındaki verileri kendi kanalımıza aktarıyor
 <img width="1920" height="999" alt="veri madencisi" src="https://github.com/user-attachments/assets/534302c2-478e-4647-895f-72ee591c99d2" />
-
---SHEETS TABLOLARI -- TELEGRAM ANALIZ KANALINDAN GELEN VERİLER SONUCU--
-
-<img width="1920" height="997" alt="sheets2" src="https://github.com/user-attachments/assets/b53a10e3-aaa7-47f8-ba25-9e409a848186" />
-<img width="1920" height="972" alt="sheets1" src="https://github.com/user-attachments/assets/9ccd7494-f166-4171-82a4-d046616f15e4" />
-
+--TELEGRAM KOMUT ROBOTU--
+Bu robot telegramdaki kendi kanalımıza aktarılan verileri  çekmemize yardımcı oluyor.
+<img width="1920" height="999" alt="telegram komut" src="https://github.com/user-attachments/assets/61ff1c07-a789-484f-8c31-e4fdab54d9a6" />
 --YAPAY ZEKA BOTU ANALİZ RAPORU--
 <img width="1457" height="835" alt="analiz" src="https://github.com/user-attachments/assets/68390dba-92e8-459b-9164-1637726fae6c" />
 
---GÜNLÜK FİNANS GELİŞMELERİ HER SABAH 10.15'DE TELEGRAM YOLUYLA YORUMLANARAK MESAJ BİLDİRİYOR--
-<img width="1690" height="840" alt="mail1" src="https://github.com/user-attachments/assets/b717416e-088a-4f49-9dfb-54651996f53c" />
-<img width="1701" height="899" alt="mail2" src="https://github.com/user-attachments/assets/8ba4db65-7eb7-4e09-a150-443fba2cc259" />
+--SHEETS TABLOLARI -- TELEGRAM ANALIZ KANALINDAN GELEN VERİLER SONUCU--
+Veriler tablolanarak kayıt ediliyor.
+<img width="1920" height="997" alt="sheets2" src="https://github.com/user-attachments/assets/b53a10e3-aaa7-47f8-ba25-9e409a848186" />
+<img width="1920" height="972" alt="sheets1" src="https://github.com/user-attachments/assets/9ccd7494-f166-4171-82a4-d046616f15e4" />
+
 
 **FinAnalyst-n8n**, Borsa İstanbul (BIST), Kripto Para Piyasaları, Değerli Madenler / Döviz ve Son Halka Arzların (IPO) anlık ve geçmiş verilerini modüler olarak toplayan, analiz eden **günlük otomatik e-posta bülteni**, Telegram üzerinden anlık nicel teknik analiz raporları üreten **interaktif bot motoru** ve Telegram kanallarından gelen ham akışları yapay zeka ile filtreleyerek yapılandıran **Veri Madencisi (Data Miner)** modüllerini tek bir çatıda birleştiren **n8n tabanlı gelişmiş finansal istihbarat ve analiz ekosistemidir**.
 
