@@ -1,0 +1,658 @@
+{
+  "name": "Apify Web Scraping",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 58
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b148f194-da72-47c1-85b2-b6d7bbef1c01",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "wAusCMrm284Voaw86",
+          "mode": "list",
+          "cachedResultName": "X Tweet Scraper | From $0.15/1K Tweets | Pay-Per Result (xquik/x-tweet-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/wAusCMrm284Voaw86/input"
+        },
+        "customBody": "{\n  \"startUrls\": [\n    \"https://x.com/YOUR_TARGET_ACCOUNT\"\n  ],\n  \"maxItems\": 10,\n  \"cookies\": [\n    {\n      \"name\": \"auth_token\",\n      \"value\": \"YOUR_X_AUTH_TOKEN\",\n      \"domain\": \".x.com\",\n      \"path\": \"/\"\n    },\n    {\n      \"name\": \"ct0\",\n      \"value\": \"YOUR_X_CT0_TOKEN\",\n      \"domain\": \".x.com\",\n      \"path\": \"/\"\n    }\n  ]\n}",
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        304,
+        0
+      ],
+      "id": "acc4797c-ca3c-4940-85c3-b9c06ec4c3e2",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "YOUR_APIFY_CREDENTIAL_ID",
+          "name": "Apify OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen profesyonel bir Kripto Para ve Piyasa Analisti yardımcısısın. Sana verilen metni analiz et ve çıktıyı KESİNLİKLE sadece aşağıdaki JSON formatında ver (ekstra hiçbir açıklama metni yazma):\n\n{\n  \"isim\": \"Varlık adı örn: BTC\",\n  \"current_price\": \"Şu anki fiyat tahmini veya metindeki seviye örn: 65K\",\n  \"hedef_fiyat\": \"Hedef seviye örn: 70K\",\n  \"stop\": \"Stop seviyesi örn: 63K\",\n  \"yorum\": \"Kısa veya uzun vadeli beklentiye dair ufak yorum\"\n}\n\nİncelenecek Metin:\n{{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        912,
+        64
+      ],
+      "id": "ca13537f-c27a-458b-a44b-7e53c38c1e3a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        848,
+        272
+      ],
+      "id": "ca005f8d-1e53-4ea4-8871-98238b7c70f5",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "93016ce8-896d-4fc7-9e32-c383484bccec",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "EVET",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1472,
+        112
+      ],
+      "id": "b442a1c6-040f-45df-b0cf-6d35d9614613",
+      "name": "Veriler Kullanılabilir Mi?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.media[0].videoVariants.find(v => v.contentType === 'video/mp4')?.url || $json.media[0].videoVariants[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        976,
+        -336
+      ],
+      "id": "06b1004c-67e8-4fb2-b378-5526e8e9ef24",
+      "name": "Video İndirici"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e654864e-f87e-4fdb-bfd1-f6badaccd811",
+              "leftValue": "={{ $json.media?.[0]?.videoVariants?.some(v => v.url?.includes('.mp4') || v.contentType?.includes('mp4')) }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        -224
+      ],
+      "id": "4f431c2c-f37e-4668-8517-9dfb5c5dc3bd",
+      "name": "mp4 Mü?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "90de0a81-b8d5-468e-8af3-d1a235dae07b",
+              "leftValue": "={{ $json.media[0].type }}",
+              "rightValue": "video",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        0
+      ],
+      "id": "06837858-2ced-4f80-b0bf-dbbadc843bb1",
+      "name": "Video Mu Text Mi?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GROQ_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "whisper-large-v3-turbo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1184,
+        -288
+      ],
+      "id": "57d09188-26fb-48e9-8b10-9c494a41896a",
+      "name": "mp4-To-Text"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen profesyonel bir Kripto Para ve Piyasa Analisti yardımcısısın. Sana verilen metni analiz et ve çıktıyı KESİNLİKLE sadece aşağıdaki JSON formatında ver (ekstra hiçbir açıklama metni yazma):\n\n{\n  \"isim\": \"Varlık adı örn: BTC\",\n  \"current_price\": \"Şu anki fiyat tahmini veya metindeki seviye örn: 65K\",\n  \"hedef_fiyat\": \"Hedef seviye örn: 70K\",\n  \"stop\": \"Stop seviyesi örn: 63K\",\n  \"yorum\": \"Kısa veya uzun vadeli beklentiye dair ufak yorum\"\n}\n\nİncelenecek Metin:\n{{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1392,
+        -304
+      ],
+      "id": "a7f9af19-7444-43fa-b58e-55eb6c8cf354",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        -112
+      ],
+      "id": "277d66aa-d5a2-43d8-a60d-bb3e41bb599a",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Eko Analiz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tarih": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "İsim": "={{ JSON.parse($json.output).isim }}",
+            "Şu Anki Fiyat": "={{ JSON.parse($json.output).current_price }}",
+            "Hedef Fiyat": "={{ JSON.parse($json.output).hedef_fiyat }}",
+            "Stop": "={{ JSON.parse($json.output).stop }}",
+            "Yorum": "={{ JSON.parse($json.output).yorum }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tarih",
+              "displayName": "Tarih",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "İsim",
+              "displayName": "İsim",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Şu Anki Fiyat",
+              "displayName": "Şu Anki Fiyat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hedef Fiyat",
+              "displayName": "Hedef Fiyat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stop",
+              "displayName": "Stop",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Yorum",
+              "displayName": "Yorum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        -272
+      ],
+      "id": "fb8d61db-c35f-4e91-b298-a200f82b12d0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n// Tablodaki son 10 kaydı al\nconst last10 = items.slice(-10);\n\nlet htmlTable = `\n  <h3>Günlük Kripto ve Piyasa Analiz Raporu (Son 10 Kayıt)</h3>\n  <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px; width: 100%;\">\n    <thead>\n      <tr style=\"background-color: #2e7d32; color: white; text-align: left;\">\n        <th>Tarih</th>\n        <th>İsim</th>\n        <th>Şu Anki Fiyat</th>\n        <th>Hedef Fiyat</th>\n        <th>Stop</th>\n        <th>Yorum</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\nfor (const item of last10) {\n  let data = item.json;\n\n  // Veri metin formatındaysa parse et\n  if (data.output && typeof data.output === 'string') {\n    try { data = JSON.parse(data.output); } catch(e) {}\n  }\n\n  const tarih = data.Tarih || data.tarih || '';\n  const isim = data['İsim'] || data.isim || '';\n  const fiyat = data['Şu Anki Fiyat'] || data.current_price || '';\n  const hedef = data['Hedef Fiyat'] || data.hedef_fiyat || '';\n  const stop = data.Stop || data.stop || '';\n  const yorum = data.Yorum || data.yorum || '';\n\n  htmlTable += `\n    <tr>\n      <td>${tarih}</td>\n      <td><b>${isim}</b></td>\n      <td>${fiyat}</td>\n      <td>${hedef}</td>\n      <td>${stop}</td>\n      <td>${yorum}</td>\n    </tr>\n  `;\n}\n\nhtmlTable += `\n    </tbody>\n  </table>\n`;\n\nreturn [{ json: { htmlTable } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        -208
+      ],
+      "id": "49b74eb9-8621-4130-a542-0fef0d281a6e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@gmail.com",
+        "subject": "Günlük Piyasa Analizi Otomatik Raporu",
+        "message": "={{ $json.htmlTable }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2400,
+        -208
+      ],
+      "id": "ea870126-1be0-412e-83b0-423e6e5dd474",
+      "name": "Send a message",
+      "webhookId": "558cd341-8537-4cf6-a15c-c1f2ef1a7cc9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Eko Analiz",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sayfa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1904,
+        16
+      ],
+      "id": "f388c4ff-7772-4091-b614-4eea4c12cf99",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1680,
+        -112
+      ],
+      "id": "9c017377-032e-4f08-aa21-b414279751a2",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Video Mu Text Mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Veriler Kullanılabilir Mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video İndirici": {
+      "main": [
+        [
+          {
+            "node": "mp4-To-Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mp4 Mü?": {
+      "main": [
+        [
+          {
+            "node": "Video İndirici",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Mu Text Mi?": {
+      "main": [
+        [
+          {
+            "node": "mp4 Mü?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mp4-To-Text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veriler Kullanılabilir Mi?": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3d4e0ec0-c2d1-4b22-956f-f5c026cc10d9",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "tags": []
+}
