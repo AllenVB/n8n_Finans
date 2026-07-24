@@ -1,5 +1,3 @@
-# 📈 FinAnalyst-n8n: Otomatik Finansal Piyasalar & İnteraktif AI Portföy Analiz Motoru
-
 --FİNANSÖR--
 Bu yapı günlük olarak piyasalarda takip ettiğim varlıkları her sabah bana güncel değişimlerini iletiyor.
 <img width="1920" height="1006" alt="Finansör" src="https://github.com/user-attachments/assets/aea993a7-9db4-4dcc-8d2a-f2d401e49705" />
@@ -13,7 +11,7 @@ Bu yapı günlük olarak piyasalarda takip ettiğim varlıkları her sabah bana 
 Bu robot telegram kanalındaki verileri kendi kanalımıza aktarıyor
 <img width="1920" height="999" alt="veri madencisi" src="https://github.com/user-attachments/assets/534302c2-478e-4647-895f-72ee591c99d2" />
 --TELEGRAM KOMUT ROBOTU--
-Bu robot telegramdaki kendi kanalımıza aktarılan verileri  çekmemize yardımcı oluyor.
+Bu robot telegramdaki kendi kanalımıza aktarılan verileri  çekmemize yardımcı oluyor.
 <img width="1920" height="999" alt="telegram komut" src="https://github.com/user-attachments/assets/61ff1c07-a789-484f-8c31-e4fdab54d9a6" />
 --YAPAY ZEKA BOTU ANALİZ RAPORU--
 <img width="1457" height="835" alt="analiz" src="https://github.com/user-attachments/assets/68390dba-92e8-459b-9164-1637726fae6c" />
@@ -33,71 +31,61 @@ En sade hali ile her sabah maile yatırım tavsiyeleri iletiliyor.
 <img width="1650" height="798" alt="mailrapor" src="https://github.com/user-attachments/assets/ac0f2565-7eac-4a27-bb03-6ad26d90654e" />
 
 
+<------------------------------------------------------------------------------------------------------------------------------------->
 
 
-**FinAnalyst-n8n**, Borsa İstanbul (BIST), Kripto Para Piyasaları, Değerli Madenler / Döviz ve Son Halka Arzların (IPO) anlık ve geçmiş verilerini modüler olarak toplayan, analiz eden **günlük otomatik e-posta bülteni**, Telegram üzerinden anlık nicel teknik analiz raporları üreten **interaktif bot motoru** ve Telegram kanallarından gelen ham akışları yapay zeka ile filtreleyerek yapılandıran **Veri Madencisi (Data Miner)** modüllerini tek bir çatıda birleştiren **n8n tabanlı gelişmiş finansal istihbarat ve analiz ekosistemidir**.
+## 🚀 Proje Mimarisi ve Sistem Özeti
 
----
+Bu proje, finansal piyasaları (BİST, Kripto, Değerli Madenler, Halka Arzlar) 7/24 izleyen, farklı kaynaklardan veri toplayan ve yapay zeka (LLM) destekli analizler sunan tam otomatik bir **Nicel Piyasa Analiz ve Portföy Yönetim Ekosistemidir**. 
 
-## 🛠️ Sistem Çözümü: Temel İş Akışları (Workflows)
+Sistem, `n8n` orkestrasyon aracı üzerinde çalışan ve birbirini tamamlayan 4 ana iş akışından (workflow) oluşmaktadır.
 
-Proje birbiriyle entegre çalışan temel n8n iş akışlarından oluşmaktadır:
+### 1. Apify Web Scraping & AI Sinyal Botu
+Sosyal medya üzerindeki finansal analizleri ve sinyalleri otomatik olarak yakalayıp yapılandıran iş akışıdır.
+* **Veri Toplama:** Zamanlayıcı tetiklemesiyle çalışır ve Apify "X Tweet Scraper" aktörünü kullanarak X (Twitter) üzerinden veri kazır[cite: 1].
+* **Medya İşleme:** Tespit edilen videolu içerikler indirilir ve Groq API (Whisper-large-v3-turbo) kullanılarak sesten metne dönüştürülür[cite: 1].
+* **Yapay Zeka Analizi:** Çekilen metinler Llama-3.1-8b-instant modeliyle analiz edilir[cite: 1]. Metin içerisindeki varlık adı, anlık fiyat, hedef fiyat, stop seviyesi ve genel yorum ayrıştırılarak JSON formatına çevrilir[cite: 1].
+* **Kayıt ve Bildirim:** Geçerli veriler Google Sheets tablosuna kaydedilir ve son 10 kaydın yer aldığı bir özet e-posta (HTML formatında) olarak kullanıcıya gönderilir[cite: 1].
 
-1. 📬 **Günlük Otomatik E-Posta Bülten Akışı:** Her gün belirlenen saatte tetiklenerek BIST, Kripto, Değerli Madenler, Halka Arzlar ve AI Makro özetini senkronize edip mobil uyumlu HTML mail olarak gönderir.
-2. 🤖 **İnteraktif Telegram Komut Motoru (`/analiz`):** Telegram üzerinden gelen canlı komutları dinler; 1 yıllık borsa verilerini, hareketli ortalamaları (SMA) ve hacim dinamiklerini AI modeliyle sentezleyip anlık nicel rapor üretir.
-3. ⛏️ **Telegram Veri Madencisi & Akıllı Filtreleme Motoru:** Telegram sinyal/analiz kanallarından gelen mesajları anlık dinleyen, Groq LLM (Llama 3.1/3.3) desteğiyle gürültüyü (sohbet, sitem, reklam, ham makro haberler) ve gerçek teknik/temel analizleri ayırt eden; analizleri **Ana Tabloya**, gürültüleri ise **Log Tablosuna** otomatik kategorize ederek işleyen otonom yapı.
+### 2. İnteraktif Telegram Komut Motoru
+Kullanıcıların anlık olarak istedikleri bir varlık (Hisse veya Kripto) hakkında detaylı analiz alabilmesini sağlayan interaktif bottur.
+* **Tetikleyici:** Telegram üzerinden gönderilen `/analiz THYAO` veya `/analiz BTC` gibi komutlarla tetiklenir[cite: 2].
+* **Teknik Veri Entegrasyonu:** İstenen varlığın hareketli ortalamaları (SMA20, SMA50, SMA200) ve hacim verileri Yahoo Finance API üzerinden çekilir[cite: 2].
+* **Hissiyat Analizi:** TradingView RSS beslemesi üzerinden ilgili varlığa ait güncel analist fikirleri toplanır[cite: 2].
+* **Nicel Raporlama:** Yapay zeka modeli (Llama-3.3-70b-versatile); teknik verileri ve analist fikirlerini sentezleyerek "Güçlü Al / Sat / Nötr" sinyallerini içeren kapsamlı bir HTML Telegram mesajı oluşturur ve kullanıcıya iletir[cite: 2].
 
----
+### 3. Kapsamlı Borsa ve Portföy Takip Sistemi
+Piyasadaki tüm makro ve mikro verileri harmanlayarak günlük strateji raporu üreten ana motor.
+* **Zamanlanmış Çalışma:** Her gün saat 10:15 ve 13:00'te otomatik olarak çalışır[cite: 3].
+* **Çoklu Veri Akışı:** Halkarz.com üzerinden yeni halka arz verilerini[cite: 3], Yahoo Finance üzerinden BİST ve değerli maden/döviz (Altın, Gümüş, USD/TRY) verilerini[cite: 3], Binance API üzerinden ise kripto para verilerini toplar[cite: 3].
+* **Performans Ölçümü:** Toplanan veriler işlenerek varlıkların günlük, haftalık, aylık, 3 aylık ve yıllık yüzde (%) değişim oranları hesaplanır[cite: 3].
+* **Haber ve AI Sentezi:** Google News RSS üzerinden piyasa haberleri çekilir[cite: 3]. Tüm sayısal veriler ve haberler bir araya getirilerek Llama modeline sunulur; aşırı satım uyarıları, değer tuzakları ve yön tahminleri içeren detaylı bir strateji raporu oluşturulur[cite: 3]. Bu rapor e-posta ve Telegram üzerinden iletilir[cite: 3].
 
-## 📌 Öne Çıkan Özellikler
-
-### 1. ⛏️ Telegram Kanalı Otomatik Veri Madencisi & NLP Filtreleme
-- 🔍 **Akıllı Gürültü Filtreleme (Noise Reduction):** Telegram gruplarından/kanallarından gelen mesajları yapay zeka süzgecinden geçirerek sıradan sohbetleri, isyanları, reklamları ve yönsüz makro haberleri `GÜRÜLTÜ` olarak ayırır.
-- 🎯 **Ticker & Sembol Önceliklendirme:** Mesaj içerisinde BIST hisse kodları (`THYAO`, `ASELS`, `YKBNK` vb.) veya kripto para birimleri (`BTC`, `ETH`, `EIGEN` vb.) geçtiğinde, mesajda rakamsal fiyat olmasa bile (örn. "destekte, direnç potansiyeli var") bunu yakalayıp yapılandırılmış bir analize dönüştürür.
-- 📊 **Çift Katmanlı Google Sheets Entegrasyonu:** 
-  - **Ana Tablo (`AI_Borsa_Sinyalleri`):** Varlık, Sinyal Yönü (AL/SAT/TUT/NOTR), Genel Duygu, Hedefler, Stop-Loss ve Temel Gerekçe sütunlarıyla temiz sinyal veritabanı.
-  - **Log Tablosu (`Loglar`):** Filtrelenen tüm ham mesajların zaman damgasıyla arşivlendiği denetim katmanı.
-
-### 2. 🤖 İnteraktif Telegram Analiz Botu (`/analiz`)
-- 💬 **Anlık Komut Algılama:** Telegram üzerinden gönderilen `/analiz <SEMBOL>` komutlarını anında işleme alma.
-- 📊 **1 Yıllık Multi-Timeframe Veri Seti:** Yahoo Finance API üzerinden son 365 günün fiyat, kapanış ve hacim verilerini çekme.
-- 📐 **Otomatik Nicel (Quant) İndikatör Hesaplama:**
-  - **Kısa / Orta / Uzun Vadeli Ortalamalar:** SMA 20, SMA 50 ve SMA 200 değerlerinin anlık hesaplanması.
-  - **Hacim Momentum Analizi:** Son günkü işlem hacmi ile 30 günlük ortalama hacmin kıyaslanması (Para girişi/çıkışı tespiti).
-  - **Mikro & Makro Trend:** Son 15 günün günlük kapanışları ile 52 haftalık dip/tepe seviyelerinin tespiti.
-- 🧠 **AI Strateji Motoru:** Groq API altyapısıyla verileri işleyip Telegram HTML formatında destek/direnç, trend yönü ve net tavsiye kararı üretme.
-- ⚡ **Token & Kota Optimizasyonu:** Zengin teknik verileri optimize ederek yüksek hız ve düşük API kota tüketimi sağlama.
-
-### 3. 📈 BIST Hisse Portföy Takibi
-- Takip edilen hisse senetleri (`KCHOL`, `ASELS`, `TUPRS`, `SAHOL`, `FROTO`, `PGSUS`, `THYAO`, `EREGL`, `ASTOR`) için **Günlük**, **Haftalık (5 iş günü)**, **Aylık**, **3 Aylık** ve **Yıllık** getiri hesaplamaları.
-- Yahoo Finance API entegrasyonu.
-
-### 4. 🪙 Kripto Para Piyasası (Binance API)
-- Major ve altcoinler (`BTC`, `ETH`, `SOL`, `XRP`, `MMT`, `EIGEN`) için Binance Klines (Mum verileri) API'si üzerinden performans analizi.
-
-### 5. 🏆 Değerli Madenler & Döviz (Ons & Gram Dönüştürücü)
-- Ons Altın ($) ve Ons Gümüş ($) verilerinin yanı sıra canlı Dolar/TL kuru üzerinden 1 Ons = 31.1034768 Gram uluslararası formülüyle **Gram Altın (TL)** ve **Gram Gümüş (TL)** fiyatlarının tarihsel tespiti ve getiri oranları.
-
-### 6. 🚀 Akıllı Halka Arz (IPO) Takibi
-- `halkarz.com` üzerinden en son işlem görmeye başlayan halka arz şirketlerinin web scraping ile tespiti ve borsadaki 1. günden itibaren **Gerçek Toplam Getirinin** hesaplanması.
-
-### 7. 📧 Senkronize & Güvenli HTML Mail Bülteni
-- Tüm paralel veri kollarının `Merge` düğümü ile senkronize edilerek **tek bir mail gönderimi** garantisi.
-- Mobil uyumlu, renk kodlu (Kâr: Yeşil / Zarar: Kırmızı) HTML tablo tasarımı.
-- Türkçe karakter encoding hatalarını önleyen özel temizleyici yapı.
+### 4. Telegram Veri Madencisi ve NLP Filtresi
+Telegram kanallarından veya gruplarından gelen düz metinleri filtreleyip sinyale dönüştüren dil işleme akışıdır.
+* **Metin Sınıflandırma:** Telegram'a düşen mesajları yakalar ve LLM (Llama-3.1-8b) kullanarak mesajın bir "ANALİZ" (sinyal) mi yoksa "GÜRÜLTÜ" (sıradan sohbet/haber) mü olduğunu tespit eder[cite: 4].
+* **Veri Ayrıştırma:** "ANALİZ" olarak işaretlenen mesajlardan varlık adı, sinyal yönü (Al/Sat/Tut), giriş seviyesi, hedefler, stop-loss, vade ve duygu (sentiment) bilgileri çıkarılır[cite: 4].
+* **Veritabanı Yönetimi:** Geçerli finansal analizler ana Google Sheets tablosuna yazılırken, analiz niteliği taşımayan "Gürültü" mesajlar ayrı bir Log tablosuna kaydedilir[cite: 4].
 
 ---
 
-## 📐 Sistem Mimarisi (Workflow Architecture)
+## 🛠️ Kullanılan Teknolojiler (Tech Stack)
 
-### 📬 1. İş Akışı: Günlük Otomatik E-Posta Bülteni
-```text
-                       ┌──> [ BIST Liste ] ────────> [ BIST Yahoo Fetch ] ────────> [ BIST Hesaplayıcı ] ────────┐
-                       │                                                                                        │
-                       ├──> [ Kripto Liste ] ──────> [ Kripto Binance Fetch ] ────> [ Kripto Hesaplayıcı ] ────┤
-                       │                                                                                        │
-[ Schedule Trigger ] ───┼──> [ Maden Liste ] ───────> [ Maden Yahoo Fetch ] ───────> [ Maden Hesaplayıcı ] ─────┼──> [ Merge ] ──> [ Mail Hazırlayıcı ] ──> [ Gmail ]
-                       │                                                                                        │
-                       ├──> [ Yapay Zeka Analizi (Groq API) ] ─────────────────────────────────────────────────┤
-                       │                                                                                        │
-                       └──> [ Halka Arz Scraping ] ─> [ IPO Detay Fetch ] ────────> [ IPO Hesaplayıcı ] ───────┘
+* **Orkestrasyon:** n8n (Node tabanlı otomasyon)
+* **Yapay Zeka (LLM & Audio):** Groq API (Llama 3.1 8B, Llama 3.3 70B, Whisper-large-v3-turbo)
+* **Veri Kazıma (Web Scraping):** Apify (X Tweet Scraper)
+* **Finansal API'ler:** Yahoo Finance API, Binance API
+* **Haber & Veri Kaynakları:** Google News RSS, TradingView RSS, Halkarz.com
+* **Veritabanı & Bildirim:** Google Workspace (Sheets, Gmail), Telegram Bot API
+
+## ⚙️ Kurulum ve Dağıtım (Setup)
+
+1. Depoda bulunan `.json` uzantılı iş akışı (workflow) dosyalarını n8n paneline import edin.
+2. Sistemin çalışabilmesi için n8n üzerinde şu kimlik bilgilerini (credentials) tanımlayın:
+   * `Telegram API`
+   * `Groq API`
+   * `Apify OAuth2 API`
+   * `Google Sheets OAuth2 API`
+   * `Gmail OAuth2 API / SMTP`
+3. Dosyaların içindeki e-posta adreslerini, Google Sheets ID'lerini ve Telegram Chat ID'lerini kendi bilgilerinize göre güncelleyin.
+4. Akışları aktifleştirin (Activate) ve Schedule (Zamanlayıcı) düğümlerinin saat dilimlerinin doğru ayarlandığından emin olun.
